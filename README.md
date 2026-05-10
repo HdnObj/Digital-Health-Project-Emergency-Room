@@ -344,9 +344,9 @@ Then open your browser at `http://localhost:5500`.
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | `admin@hospital.org` | `Admin@2025` |
-| Doctor | `doctor@hospital.org` | `Doctor@2025` |
-| Nurse | `nurse@hospital.org` | `Nurse@2025` |
+| Admin | `admin` | `admin123` |
+| Doctor | `doctor` | `doc123` |
+| Nurse | `nurse` | `nurse123` |
 
 ---
 
