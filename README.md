@@ -132,42 +132,29 @@ The nurse dashboard serves as the **clinical intake controller** — the first s
 ```
 erms/
 │
-├── index.html                        ← Landing page & secure login gateway
-├── db.json                           ← Intelligent Integration Engine (mock HIS database)
-│
-├── pages/
-│   ├── admin-dashboard.html          ← Strategic oversight interface
-│   ├── nurse-dashboard.html          ← Triage & vitals capture interface
-│   └── doctor-dashboard.html         ← Clinical encounter & prescription interface
+├── index.html           
+├── admin.html        
+├── nurse.html
+├── landingpage.html  
+├── doctor.html
+├── patient.html        
 │
 ├── css/
-│   ├── main.css                      ← Layout grid, CSS variables, typography, reset
-│   ├── components.css                ← Cards, buttons, badges, modals, tables, forms
-│   ├── dashboard.css                 ← Sidebar, header bar, dashboard-specific layout
-│   └── triage.css                    ← Priority color system (Red / Yellow / Green)
+│   ├── main.css                   
+│   ├── admin.css             
+│   ├── nurse.css
+│   ├── landingpage.css
+│   ├── patient.css               
+│   └── doctor.css                   
 │
 ├── js/
-│   ├── core/
-│   │   ├── auth.js                   ← Login, logout, credential validation
-│   │   ├── router.js                 ← Route guard — protects all dashboard pages
-│   │   └── api.js                    ← Single data gateway — all fetch() calls live here
-│   │
-│   ├── pages/
-│   │   ├── admin.js                  ← Admin dashboard data binding & audit log logic
-│   │   ├── nurse.js                  ← Triage form logic, MEWS computation
-│   │   └── doctor.js                 ← Clinical view, prescription engine, disposition
-│   │
-│   └── ui/
-│       ├── ui-render.js              ← Pure DOM renderer — receives data, returns HTML
-│       ├── ui-charts.js              ← Chart rendering (capacity graphs, throughput)
-│       └── ui-notifications.js       ← Toast alerts, status change banners
+│   ├── auth.js          
+│   ├── admin.js              
+│   ├── nurse.js               
+│   └── doctor.js              
 │
 ├── data/
-│   └── db.json                       ← (alternate location) structured patient & user data
-│
-└── assets/
-    ├── fonts/                        ← Local font files
-    └── icons/                        ← SVG icon library
+│   └── db.json                      
 ```
 
 ---
