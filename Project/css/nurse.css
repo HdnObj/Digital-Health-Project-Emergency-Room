@@ -1,0 +1,55 @@
+/* ══════════════════════════════════════════════════════════════════
+   NURSE.CSS — Nurse portal specific styles
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Triage vitals input overrides */
+.vital-box input.form-input {
+  text-align:  center;
+  font-weight: 600;
+  margin:      6px 0;
+  padding:     7px 10px;
+}
+
+/* Pain range slider */
+#vPain {
+  width:     100%;
+  margin:    8px 0;
+  accent-color: var(--blue-500);
+}
+
+/* CDS alert for triage panel */
+#cdsTriageAlert .cds-alert,
+#cdsQueueAlert  .cds-alert {
+  margin-bottom: 16px;
+}
+
+/* Priority card grid — 3 columns in triage */
+.priority-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* Completed triage table — compact */
+#completedTable td { font-size: 12.5px; }
+
+/* Queue split: awaiting vs triaged */
+.queue-empty {
+  padding:    20px;
+  text-align: center;
+  color:      var(--text-muted);
+  font-size:  13px;
+}
+.queue-empty i {
+  display:      block;
+  font-size:    28px;
+  margin-bottom: 8px;
+}
+
+/* Nurse stats — 3-column override */
+@media (min-width: 769px) {
+  .stats-grid.nurse-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

@@ -3,12 +3,12 @@
 const SESSION_KEY = 'erms_session';
 const DELTA_KEY   = 'erms_db_delta';
 
-// ── Embedded base database (no fetch needed) ──────────────────────────────────
+// ── Embedded base database ────────────────────────────────────────────────────
 const BASE_DB = {
   users: [
-    { id:'u1', username:'admin',  password:'admin123', role:'admin',  name:'Omar Hassan',    department:'Management',       avatar:'OH' },
-    { id:'u2', username:'nurse',  password:'nurse123', role:'nurse',  name:'Sara Khalil',    department:'Emergency',        avatar:'SK' },
-    { id:'u3', username:'doctor', password:'doc123',   role:'doctor', name:'Dr. Ahmed Nour', department:'Emergency Medicine',avatar:'AN' }
+    { id:'u1', username:'admin',  password:'admin123', role:'admin',  name:'Omar Hassan',    department:'Management',        avatar:'OH' },
+    { id:'u2', username:'nurse',  password:'nurse123', role:'nurse',  name:'Sara Khalil',    department:'Emergency',         avatar:'SK' },
+    { id:'u3', username:'doctor', password:'doc123',   role:'doctor', name:'Dr. Ahmed Nour', department:'Emergency Medicine', avatar:'AN' }
   ],
   patients: [
     { id:'p1', nationalId:'29901010100001', name:'John Anderson', dob:'1990-03-15', gender:'Male',   phone:'+20-100-000-0001', chiefComplaint:'Chest pain and shortness of breath', status:'in-triage',       bedId:null,  assignedDoctorId:'u3', triageNurseId:'u2', arrivedAt:'2026-05-08T08:30:00Z' },
@@ -23,18 +23,18 @@ const BASE_DB = {
     { id:'v4', patientId:'p4', recordedBy:'u2', timestamp:'2026-05-08T06:15:00Z', bp:'118/76', hr:72,  spo2:99, temp:36.5, painScale:4, priority:'P3-Green'  }
   ],
   diagnoses: [
-    { id:'d1', patientId:'p2', doctorId:'u3', icd10Code:'G43.909', diagnosis:'Migraine, unspecified',    treatment:'Sumatriptan, rest in dark room, IV fluids', prescriptions:[{ ndc:'0007-3521-18', drug:'Sumatriptan 50mg',   dose:'1 tab at onset, may repeat after 2h' }], outcome:null,        timestamp:'2026-05-08T08:00:00Z' },
-    { id:'d2', patientId:'p4', doctorId:'u3', icd10Code:'K59.00',  diagnosis:'Constipation',             treatment:'Lactulose, dietary advice, increase fluids', prescriptions:[{ ndc:'0054-3176-58', drug:'Lactulose 10g/15ml', dose:'15ml twice daily' }],                   outcome:'discharged', timestamp:'2026-05-08T07:00:00Z' }
+    { id:'d1', patientId:'p2', doctorId:'u3', icd10Code:'G43.909', diagnosis:'Migraine, unspecified',  treatment:'Sumatriptan, rest in dark room, IV fluids', prescriptions:[{ ndc:'0007-3521-18', drug:'Sumatriptan 50mg',   dose:'1 tab at onset, may repeat after 2h' }], outcome:null,        timestamp:'2026-05-08T08:00:00Z' },
+    { id:'d2', patientId:'p4', doctorId:'u3', icd10Code:'K59.00',  diagnosis:'Constipation',           treatment:'Lactulose, dietary advice, increase fluids',  prescriptions:[{ ndc:'0054-3176-58', drug:'Lactulose 10g/15ml', dose:'15ml twice daily' }],                   outcome:'discharged', timestamp:'2026-05-08T07:00:00Z' }
   ],
   beds: [
-    { id:'b1', ward:'ER Bay A',  status:'available'                    },
-    { id:'b2', ward:'ER Bay A',  status:'occupied',    patientId:'p2'  },
-    { id:'b3', ward:'ER Bay A',  status:'available'                    },
-    { id:'b4', ward:'ER Bay B',  status:'available'                    },
-    { id:'b5', ward:'ER Bay B',  status:'available'                    },
-    { id:'b6', ward:'ER Bay B',  status:'maintenance'                  },
-    { id:'b7', ward:'Resus',     status:'available'                    },
-    { id:'b8', ward:'Resus',     status:'available'                    }
+    { id:'b1', ward:'ER Bay A', status:'available'                   },
+    { id:'b2', ward:'ER Bay A', status:'occupied',    patientId:'p2' },
+    { id:'b3', ward:'ER Bay A', status:'available'                   },
+    { id:'b4', ward:'ER Bay B', status:'available'                   },
+    { id:'b5', ward:'ER Bay B', status:'available'                   },
+    { id:'b6', ward:'ER Bay B', status:'maintenance'                 },
+    { id:'b7', ward:'Resus',    status:'available'                   },
+    { id:'b8', ward:'Resus',    status:'available'                   }
   ],
   auditLog: [
     { id:'log1', userId:'u2', userName:'Sara Khalil',    action:'TRIAGE_COMPLETED',   target:'John Anderson',           timestamp:'2026-05-08T08:45:00Z' },
@@ -44,50 +44,47 @@ const BASE_DB = {
     { id:'log5', userId:'u2', userName:'Sara Khalil',    action:'PATIENT_REGISTERED', target:'Robert Chen',             timestamp:'2026-05-08T09:00:00Z' }
   ],
   drugs: [
-    { ndc:'0069-3060-30', name:'Aspirin 81mg',         category:'Antiplatelet'     },
-    { ndc:'0007-3521-18', name:'Sumatriptan 50mg',     category:'Antimigraine'     },
-    { ndc:'0054-3176-58', name:'Lactulose 10g/15ml',   category:'Laxative'        },
-    { ndc:'0338-0117-04', name:'Normal Saline 0.9% IV',category:'IV Fluid'        },
-    { ndc:'0409-4888-34', name:'Morphine 10mg/ml',     category:'Opioid Analgesic' },
-    { ndc:'0641-6003-25', name:'Metoprolol 25mg',      category:'Beta Blocker'     },
-    { ndc:'0781-5064-31', name:'Amoxicillin 500mg',    category:'Antibiotic'      },
-    { ndc:'0006-0963-54', name:'Ondansetron 4mg',      category:'Antiemetic'      },
-    { ndc:'0143-9914-10', name:'Lorazepam 2mg/ml',     category:'Benzodiazepine'  },
-    { ndc:'0074-3305-13', name:'Epinephrine 1mg/ml',   category:'Vasopressor'     }
+    { ndc:'0069-3060-30', name:'Aspirin 81mg',          category:'Antiplatelet'     },
+    { ndc:'0007-3521-18', name:'Sumatriptan 50mg',      category:'Antimigraine'     },
+    { ndc:'0054-3176-58', name:'Lactulose 10g/15ml',    category:'Laxative'         },
+    { ndc:'0338-0117-04', name:'Normal Saline 0.9% IV', category:'IV Fluid'         },
+    { ndc:'0409-4888-34', name:'Morphine 10mg/ml',      category:'Opioid Analgesic' },
+    { ndc:'0641-6003-25', name:'Metoprolol 25mg',       category:'Beta Blocker'     },
+    { ndc:'0781-5064-31', name:'Amoxicillin 500mg',     category:'Antibiotic'       },
+    { ndc:'0006-0963-54', name:'Ondansetron 4mg',       category:'Antiemetic'       },
+    { ndc:'0143-9914-10', name:'Lorazepam 2mg/ml',      category:'Benzodiazepine'   },
+    { ndc:'0074-3305-13', name:'Epinephrine 1mg/ml',    category:'Vasopressor'      }
   ],
-  hospital:{ name:'City General Hospital', totalBeds:8, erCapacity:40 }
+  hospital: { name:'City General Hospital', totalBeds:8, erCapacity:40 }
 };
 
 // ── DB helpers ────────────────────────────────────────────────────────────────
 function loadDB() {
   const delta = localStorage.getItem(DELTA_KEY);
   if (!delta) return JSON.parse(JSON.stringify(BASE_DB));
-  const d = JSON.parse(delta);
+  const d    = JSON.parse(delta);
   const base = JSON.parse(JSON.stringify(BASE_DB));
-  // For each collection: if the delta has it, use delta; otherwise fall back to base.
-  // This ensures new patients/users/beds added at runtime are never overwritten by BASE_DB.
   return {
-    users:    d.users    ?? base.users,
-    patients: d.patients ?? base.patients,
-    vitals:   d.vitals   ?? base.vitals,
-    diagnoses:d.diagnoses?? base.diagnoses,
-    beds:     d.beds     ?? base.beds,
-    auditLog: d.auditLog ?? base.auditLog,
-    drugs:    base.drugs,
-    hospital: base.hospital
+    users:     d.users     ?? base.users,
+    patients:  d.patients  ?? base.patients,
+    vitals:    d.vitals    ?? base.vitals,
+    diagnoses: d.diagnoses ?? base.diagnoses,
+    beds:      d.beds      ?? base.beds,
+    auditLog:  d.auditLog  ?? base.auditLog,
+    drugs:     base.drugs,
+    hospital:  base.hospital
   };
 }
 
 function saveDB(db) {
-  const delta = {
-    users:    db.users,
-    patients: db.patients,
-    vitals:   db.vitals,
-    diagnoses:db.diagnoses,
-    beds:     db.beds,
-    auditLog: db.auditLog
-  };
-  localStorage.setItem(DELTA_KEY, JSON.stringify(delta));
+  localStorage.setItem(DELTA_KEY, JSON.stringify({
+    users:     db.users,
+    patients:  db.patients,
+    vitals:    db.vitals,
+    diagnoses: db.diagnoses,
+    beds:      db.beds,
+    auditLog:  db.auditLog
+  }));
 }
 
 // ── Session helpers ───────────────────────────────────────────────────────────
@@ -95,8 +92,8 @@ function getSession() {
   const s = sessionStorage.getItem(SESSION_KEY);
   return s ? JSON.parse(s) : null;
 }
-function setSession(user) { sessionStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
-function clearSession()   { sessionStorage.removeItem(SESSION_KEY); }
+function setSession(user)  { sessionStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
+function clearSession()    { sessionStorage.removeItem(SESSION_KEY); }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 function doLogin(username, password) {
@@ -113,7 +110,6 @@ function doLogout() {
   window.location.href = 'index.html';
 }
 
-// ── Route guard ───────────────────────────────────────────────────────────────
 function requireAuth(requiredRole) {
   const user = getSession();
   if (!user) { window.location.href = 'index.html'; return null; }
@@ -127,14 +123,21 @@ function requireAuth(requiredRole) {
 function addAuditLog(action, target) {
   const user = getSession();
   const db   = loadDB();
-  db.auditLog.unshift({ id:'log'+Date.now(), userId:user.id, userName:user.name, action, target, timestamp:new Date().toISOString() });
+  db.auditLog.unshift({
+    id: 'log' + Date.now(),
+    userId:   user.id,
+    userName: user.name,
+    action,
+    target,
+    timestamp: new Date().toISOString()
+  });
   saveDB(db);
 }
 
 // ── UI helpers ────────────────────────────────────────────────────────────────
 function timeAgo(iso) {
   const m = Math.floor((Date.now() - new Date(iso)) / 60000);
-  if (m < 1) return 'just now';
+  if (m < 1)  return 'just now';
   if (m < 60) return m + 'm ago';
   const h = Math.floor(m / 60);
   if (h < 24) return h + 'h ago';
@@ -148,13 +151,13 @@ function fmtDate(iso) {
 
 function statusBadge(status) {
   const map = {
-    'waiting':         ['badge-gray',  'Waiting'],
-    'in-triage':       ['badge-amber', 'In Triage'],
-    'in-progress':     ['badge-blue',  'In Progress'],
-    'under-treatment': ['badge-blue',  'Under Treatment'],
-    'discharged':      ['badge-green', 'Discharged'],
-    'admitted':        ['badge-green', 'Admitted'],
-    'referred':        ['badge-red',   'Referred']
+    'waiting':          ['badge-gray',  'Waiting'],
+    'in-triage':        ['badge-amber', 'In Triage'],
+    'in-progress':      ['badge-blue',  'In Progress'],
+    'under-treatment':  ['badge-blue',  'Under Treatment'],
+    'discharged':       ['badge-green', 'Discharged'],
+    'admitted':         ['badge-green', 'Admitted'],
+    'referred':         ['badge-red',   'Referred']
   };
   const [cls, label] = map[status] || ['badge-gray', status];
   return `<span class="badge ${cls}">${label}</span>`;
@@ -168,6 +171,25 @@ function priorityBadge(priority) {
 }
 
 function avatarColor(name) {
-  const colors = [['#DBEAFE','#1D4ED8'],['#DCFCE7','#15803D'],['#FEF3C7','#B45309'],['#FEE2E2','#B91C1C'],['#EDE9FE','#6D28D9']];
+  const colors = [
+    ['#DBEAFE','#1D4ED8'],
+    ['#DCFCE7','#15803D'],
+    ['#FEF3C7','#B45309'],
+    ['#FEE2E2','#B91C1C'],
+    ['#EDE9FE','#6D28D9']
+  ];
   return colors[name.charCodeAt(0) % colors.length];
+}
+
+// ── Sidebar & panel shared helpers ────────────────────────────────────────────
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+  document.body.style.overflow =
+    document.getElementById('sidebar').classList.contains('open') ? 'hidden' : '';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
 }

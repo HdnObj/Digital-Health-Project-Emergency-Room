@@ -1,166 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ERMS — Login</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:'DM Sans',sans-serif;display:flex;min-height:100vh;-webkit-font-smoothing:antialiased;background:#F0F5FF}
-
-/* LEFT PANEL */
-.left{width:52%;background:#0F2952;position:relative;overflow:hidden;display:flex;flex-direction:column;padding:40px 52px}
-.left-grid{position:absolute;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(59,130,246,.18) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(37,99,235,.15) 0%,transparent 50%),linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:100% 100%,100% 100%,40px 40px,40px 40px}
-.left-content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column}
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:52px}
-.brand-icon{width:40px;height:40px;background:#2563EB;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff}
-.brand-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:#fff}
-.brand-name span{font-weight:300;opacity:.6}
-.hero{flex:1;display:flex;flex-direction:column;justify-content:center}
-.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.35);color:#93C5FD;font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;margin-bottom:22px;width:fit-content}
-.hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:36px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:14px}
-.hero-title span{color:#60A5FA}
-.hero-desc{font-size:14px;color:rgba(255,255,255,.5);line-height:1.7;max-width:360px;margin-bottom:36px}
-.features{display:flex;flex-direction:column;gap:10px}
-.feature{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:13px 16px}
-.feature-icon{width:34px;height:34px;border-radius:8px;background:rgba(59,130,246,.25);color:#60A5FA;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.feature-title{font-size:13px;font-weight:600;color:#fff}
-.feature-desc{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
-.demo-creds{margin-top:28px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px}
-.demo-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:10px}
-.demo-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px}
-.demo-row:last-child{border-bottom:none}
-.demo-role{color:rgba(255,255,255,.6);display:flex;align-items:center;gap:7px}
-.role-dot{width:6px;height:6px;border-radius:50%}
-.demo-cred{color:#60A5FA;font-weight:500;font-family:monospace;font-size:11.5px}
-
-/* RIGHT PANEL */
-.right{flex:1;display:flex;align-items:center;justify-content:center;padding:40px}
-.form-wrap{width:100%;max-width:380px}
-.form-eyebrow{font-size:12px;font-weight:600;color:#2563EB;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
-.form-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#0F172A;line-height:1.2}
-.form-sub{font-size:14px;color:#64748B;margin-top:6px;margin-bottom:28px}
-.quick-fill{display:flex;gap:6px;margin-bottom:20px}
-.quick-btn{flex:1;padding:8px 10px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:12px;font-weight:500;color:#475569;cursor:pointer;background:#fff;transition:.15s ease;text-align:center;font-family:'DM Sans',sans-serif}
-.quick-btn:hover{border-color:#3B82F6;color:#1D4ED8;background:#EFF6FF}
-.error-msg{display:none;align-items:center;gap:8px;background:#FEF2F2;border:1px solid #FEE2E2;border-radius:8px;padding:10px 14px;font-size:13px;color:#B91C1C;margin-bottom:14px}
-.error-msg.show{display:flex;animation:shake .3s ease}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-
-.form-group {
-
-  margin-bottom: 16px;
-
-}
-
-.form-group:nth-child(4){
-  margin-top: 16px;
-}
-
-.form-label{display:block;font-size:12.5px;font-weight:500;color:#334155;margin-bottom:6px}
-.input-wrap{position:relative}
-.input-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:17px;pointer-events:none}
-.form-input{width:100%;padding:11px 13px 11px 40px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:#0F172A;background:#fff;outline:none;transition:.18s ease}
-.form-input:focus{border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
-.form-input::placeholder{color:#CBD5E1}
-.input-toggle{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:17px;cursor:pointer}
-.input-toggle:hover{color:#475569}
-.btn-login{width:100%;padding:13px;background:#2563EB;color:#fff;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.18s ease;margin-top:4px}
-.btn-login:hover{background:#1D4ED8;transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.3)}
-.btn-login:active{transform:translateY(0)}
-.btn-login:disabled{opacity:.7;cursor:not-allowed;transform:none}
-.form-footer{text-align:center;margin-top:24px;font-size:12px;color:#94A3B8;line-height:1.6}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spin{animation:spin .8s linear infinite;display:inline-block}
-
-/* RESPONSIVE */
-@media(max-width:900px){.left{display:none}.right{padding:32px 24px}.form-wrap{max-width:440px}}
-@media(max-width:480px){.right{padding:24px 16px}.form-title{font-size:22px}.quick-fill{flex-direction:column}.form-input{font-size:16px}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERMS — Login</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
-<div class="left">
-  <div class="left-grid"></div>
-  <div class="left-content">
-    <div class="brand">
-      <div class="brand-icon"><i class="ti ti-activity-heartbeat"></i></div>
-      <div><div class="brand-name">ERMS <span>· City General</span></div></div>
-    </div>
-    <div class="hero">
-      <div class="hero-tag"><i class="ti ti-shield-check" style="font-size:13px"></i> HL7-Inspired Clinical Interoperability</div>
-      <h1 class="hero-title">Emergency Room<br><span>Management</span><br>System</h1>
-      <p class="hero-desc">A unified clinical platform for real-time triage, bed management, and patient care coordination across all ER roles.</p>
-      <div class="features">
-        <div class="feature"><div class="feature-icon"><i class="ti ti-stethoscope"></i></div><div><div class="feature-title">Real-Time Triage & Vitals</div><div class="feature-desc">ESI priority scoring with automated CDS alerts</div></div></div>
-        <div class="feature"><div class="feature-icon"><i class="ti ti-bed"></i></div><div><div class="feature-title">Bed & Capacity Management</div><div class="feature-desc">Live ward occupancy with instant bed assignment</div></div></div>
-        <div class="feature"><div class="feature-icon"><i class="ti ti-pill"></i></div><div><div class="feature-title">NDC Drug Prescriptions</div><div class="feature-desc">ICD-10 coded diagnoses with drug interaction checks</div></div></div>
+<!-- ══ LOGIN SHELL ══ -->
+<div class="login-shell">
+
+  <!-- LEFT: Branding Panel -->
+  <div class="login-left">
+    <div class="login-left-grid"></div>
+    <div class="login-left-content">
+
+      <div class="login-brand">
+        <div class="login-brand-icon"><i class="ti ti-activity-heartbeat"></i></div>
+        <div>
+          <div class="login-brand-name">ERMS <span>· City General</span></div>
+        </div>
       </div>
 
-      <!-- <div class="demo-creds">
-        <div class="demo-label">Demo Credentials</div>
-        <div class="demo-row"><div class="demo-role"><div class="role-dot" style="background:#3B82F6"></div>Admin</div><div class="demo-cred">admin / admin123</div></div>
-        <div class="demo-row"><div class="demo-role"><div class="role-dot" style="background:#F59E0B"></div>Nurse</div><div class="demo-cred">nurse / nurse123</div></div>
-        <div class="demo-row"><div class="demo-role"><div class="role-dot" style="background:#22C55E"></div>Doctor</div><div class="demo-cred">doctor / doc123</div></div>
-      </div> -->
+      <div class="login-hero">
+        <div class="login-hero-tag">
+          <i class="ti ti-shield-check"></i>
+          HL7-Inspired Clinical Interoperability
+        </div>
+        <h1 class="login-hero-title">
+          Emergency Room<br>
+          <span>Management</span><br>
+          System
+        </h1>
+        <p class="login-hero-desc">
+          A unified clinical platform for real-time triage, bed management,
+          and patient care coordination across all ER roles.
+        </p>
+
+        <div class="login-features">
+          <div class="login-feature">
+            <div class="login-feature-icon"><i class="ti ti-stethoscope"></i></div>
+            <div>
+              <div class="login-feature-title">Real-Time Triage &amp; Vitals</div>
+              <div class="login-feature-desc">ESI priority scoring with automated CDS alerts</div>
+            </div>
+          </div>
+          <div class="login-feature">
+            <div class="login-feature-icon"><i class="ti ti-bed"></i></div>
+            <div>
+              <div class="login-feature-title">Bed &amp; Capacity Management</div>
+              <div class="login-feature-desc">Live ward occupancy with instant bed assignment</div>
+            </div>
+          </div>
+          <div class="login-feature">
+            <div class="login-feature-icon"><i class="ti ti-pill"></i></div>
+            <div>
+              <div class="login-feature-title">NDC Drug Prescriptions</div>
+              <div class="login-feature-desc">ICD-10 coded diagnoses with drug interaction checks</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
-</div>
 
-<div class="right">
-  <div class="form-wrap">
-    <div class="form-eyebrow">Secure Access Portal</div>
-    <h2 class="form-title">Welcome back</h2>
+  <!-- RIGHT: Login Form -->
+  <div class="login-right">
+    <div class="login-form-wrap">
 
-    <!-- <p class="form-sub">Sign in to access your clinical dashboard</p> -->
+      <div class="login-eyebrow">Secure Access Portal</div>
+      <h2 class="login-form-title">Welcome back</h2>
 
-    <!-- <div class="quick-fill">
-      <button class="quick-btn" onclick="quickFill('admin','admin123')"><i class="ti ti-shield"></i> Admin</button>
-      <button class="quick-btn" onclick="quickFill('nurse','nurse123')"><i class="ti ti-stethoscope"></i> Nurse</button>
-      <button class="quick-btn" onclick="quickFill('doctor','doc123')"><i class="ti ti-user-heart"></i> Doctor</button>
-    </div> -->
-
-    <div class="error-msg" id="errorMsg"><i class="ti ti-alert-circle"></i><span id="errorText">Invalid credentials.</span></div>
-
-    <div class="form-group">
-      <label class="form-label">Username</label>
-      <div class="input-wrap">
-        <i class="ti ti-user input-icon"></i>
-        <input type="text" class="form-input" id="username" placeholder="Enter your username" autocomplete="username">
+      <!-- Error message -->
+      <div class="login-error" id="errorMsg">
+        <i class="ti ti-alert-circle"></i>
+        <span id="errorText">Invalid credentials.</span>
       </div>
-    </div>
 
-    <div class="form-group" style="margin-bottom:24px">
-      <label class="form-label">Password</label>
-      <div class="input-wrap">
-        <i class="ti ti-lock input-icon"></i>
-        <input type="password" class="form-input" id="password" placeholder="Enter your password" autocomplete="current-password">
-        <i class="ti ti-eye input-toggle" id="togglePwd" onclick="togglePassword()"></i>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <div class="input-wrap">
+          <i class="ti ti-user input-icon"></i>
+          <input
+            type="text"
+            class="form-input input-icon-pad"
+            id="username"
+            placeholder="Enter your username"
+            autocomplete="username"
+          >
+        </div>
       </div>
-    </div>
 
-    <button class="btn-login" id="loginBtn" onclick="handleLogin()">
-      <i class="ti ti-login"></i> Sign In to Dashboard
-    </button>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <i class="ti ti-lock input-icon"></i>
+          <input
+            type="password"
+            class="form-input input-icon-pad"
+            id="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          >
+          <i class="ti ti-eye input-toggle" id="togglePwd" onclick="togglePassword()"></i>
+        </div>
+      </div>
 
-    <div class="form-footer">
-      Closed hospital ecosystem — accounts are pre-provisioned<br>
-      <strong style="color:#475569">SBES240 · Biomedical &amp; Healthcare Data Engineering</strong>
+      <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+        <i class="ti ti-login"></i> Sign In to Dashboard
+      </button>
+
+      <div class="login-footer">
+        Closed hospital ecosystem — accounts are pre-provisioned<br>
+        <strong>SBES240 · Biomedical &amp; Healthcare Data Engineering</strong>
+      </div>
+
     </div>
   </div>
-</div>
+
+</div><!-- end login-shell -->
 
 <script src="js/auth.js"></script>
 <script>
-  // Redirect if already logged in
-  (function(){
+  /* Redirect if already logged in */
+  (function () {
     const s = sessionStorage.getItem('erms_session');
-    if (s) { const u = JSON.parse(s); window.location.href = u.role + '.html'; }
+    if (s) {
+      const u = JSON.parse(s);
+      window.location.href = u.role + '.html';
+    }
   })();
 
   function quickFill(u, p) {
@@ -172,8 +147,13 @@ body{font-family:'DM Sans',sans-serif;display:flex;min-height:100vh;-webkit-font
   function togglePassword() {
     const pwd  = document.getElementById('password');
     const icon = document.getElementById('togglePwd');
-    if (pwd.type === 'password') { pwd.type = 'text';     icon.className = 'ti ti-eye-off input-toggle'; }
-    else                          { pwd.type = 'password'; icon.className = 'ti ti-eye input-toggle'; }
+    if (pwd.type === 'password') {
+      pwd.type = 'text';
+      icon.className = 'ti ti-eye-off input-toggle';
+    } else {
+      pwd.type = 'password';
+      icon.className = 'ti ti-eye input-toggle';
+    }
   }
 
   function handleLogin() {
@@ -186,33 +166,34 @@ body{font-family:'DM Sans',sans-serif;display:flex;min-height:100vh;-webkit-font
 
     if (!username || !password) {
       document.getElementById('errorText').textContent = 'Please enter both username and password.';
-      errEl.classList.add('show'); return;
+      errEl.classList.add('show');
+      return;
     }
 
-    // Show loading state
     btn.disabled = true;
     btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Authenticating…';
 
-    // Small UX delay then login (synchronous, no fetch)
-    setTimeout(function() {
+    setTimeout(function () {
       const result = doLogin(username, password);
       if (result.success) {
         btn.innerHTML = '<i class="ti ti-check"></i> Access Granted!';
-        btn.style.background = '#16A34A';
-        setTimeout(function() {
+        btn.classList.add('btn-login--success');
+        setTimeout(function () {
           window.location.href = result.user.role + '.html';
         }, 500);
       } else {
         btn.disabled = false;
         btn.innerHTML = '<i class="ti ti-login"></i> Sign In to Dashboard';
-        btn.style.background = '';
+        btn.classList.remove('btn-login--success');
         document.getElementById('errorText').textContent = result.error;
         errEl.classList.add('show');
       }
     }, 600);
   }
 
-  document.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleLogin(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') handleLogin();
+  });
 </script>
 </body>
 </html>

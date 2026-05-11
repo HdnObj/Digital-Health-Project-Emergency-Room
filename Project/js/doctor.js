@@ -1,0 +1,361 @@
+// doctor.js — Doctor portal logic
+
+let db          = null;
+let currentUser = null;
+let selectedDrug  = null;
+let prescriptions = [];
+
+/* ══════════════════════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════════════════════ */
+function init() {
+  currentUser = requireAuth('doctor');
+  if (!currentUser) return;
+
+  document.getElementById('sidebarAvatar').textContent = currentUser.avatar;
+  document.getElementById('sidebarName').textContent   = currentUser.name;
+  document.getElementById('topbarAvatar').textContent  = currentUser.avatar;
+
+  db = loadDB();
+  renderAll();
+
+  // Close drug dropdown on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.autocomplete-wrap'))
+      document.getElementById('drugDropdown')?.classList.remove('open');
+  });
+}
+
+function renderAll() {
+  renderStats();
+  renderMyPatients();
+  renderClinSelect();
+  renderHistory();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STATS
+   ══════════════════════════════════════════════════════════════════ */
+function renderStats() {
+  const active    = db.patients.filter(p => p.status !== 'discharged');
+  const awaiting  = active.filter(p => p.status === 'in-triage' || p.status === 'in-progress').length;
+  const rx        = db.diagnoses
+    .filter(d => d.doctorId === currentUser.id)
+    .reduce((s, d) => s + d.prescriptions.length, 0);
+  const disc      = db.patients.filter(p => p.assignedDoctorId === currentUser.id && p.status === 'discharged').length;
+
+  document.getElementById('st-assigned').textContent  = active.length;
+  document.getElementById('st-awaiting').textContent  = awaiting;
+  document.getElementById('st-rx').textContent        = rx;
+  document.getElementById('st-discharged').textContent= disc;
+
+  const cntEl = document.getElementById('myPtCount');
+  if (cntEl) cntEl.textContent = active.length;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MY PATIENTS PANEL
+   ══════════════════════════════════════════════════════════════════ */
+function renderMyPatients() {
+  const active = db.patients.filter(p => p.status !== 'discharged');
+
+  // CDS critical alert
+  const crits = active.filter(p => {
+    const v = db.vitals.find(x => x.patientId === p.id);
+    return v && (v.hr > 120 || v.spo2 < 90);
+  }).map(p => p.name);
+  const cdsEl = document.getElementById('docCdsAlert');
+  if (cdsEl) cdsEl.innerHTML = crits.length
+    ? `<div class="cds-alert" style="margin-bottom:16px"><i class="ti ti-alert-triangle"></i><strong>Critical Vitals:</strong> ${crits.join(', ')} — immediate attention required.</div>`
+    : '';
+
+  const grid = document.getElementById('patientCards');
+  if (!grid) return;
+
+  grid.innerHTML = active.map(p => {
+    const v  = db.vitals.find(x => x.patientId === p.id);
+    const dx = db.diagnoses.find(x => x.patientId === p.id);
+    const [bg, fc] = avatarColor(p.name);
+    const init = p.name.split(' ').map(n => n[0]).join('').slice(0, 2);
+
+    const vitalsBar = v
+      ? `<div style="padding:10px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#F8FAFF">
+          <div style="text-align:center"><div style="font-size:10px;color:#94A3B8">BP</div><div style="font-size:13px;font-weight:600">${v.bp}</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#94A3B8">HR</div><div style="font-size:13px;font-weight:600;color:${v.hr>120?'#DC2626':'#0F172A'}">${v.hr}</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#94A3B8">SpO₂</div><div style="font-size:13px;font-weight:600;color:${v.spo2<90?'#DC2626':'#0F172A'}">${v.spo2}%</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#94A3B8">Temp</div><div style="font-size:13px;font-weight:600;color:${v.temp>39?'#D97706':'#0F172A'}">${v.temp}°</div></div>
+        </div>`
+      : '<div style="padding:10px 20px;font-size:12px;color:#94A3B8;background:#F8FAFF">Awaiting triage vitals</div>';
+
+    return `<div class="card" style="overflow:hidden">
+      <div style="padding:16px 20px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;gap:12px">
+        <div style="width:42px;height:42px;border-radius:50%;background:${bg};color:${fc};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0">${init}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:14px;color:#0F172A">${p.name}</div>
+          <div style="font-size:12px;color:#64748B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.chiefComplaint}</div>
+        </div>
+        ${v ? priorityBadge(v.priority) : statusBadge(p.status)}
+      </div>
+      ${vitalsBar}
+      <div style="padding:10px 20px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:#64748B">Arrived ${timeAgo(p.arrivedAt)}</span>
+        <button class="btn btn-sm btn-primary" onclick="openClinical('${p.id}')">
+          <i class="ti ti-stethoscope"></i> ${dx ? 'View Record' : 'Examine'}
+        </button>
+      </div>
+    </div>`;
+  }).join('') || '<div style="grid-column:span 2;text-align:center;padding:40px;color:#94A3B8"><i class="ti ti-user-check" style="font-size:40px;display:block;margin-bottom:12px"></i>No active patients</div>';
+}
+
+function openClinical(id) {
+  showPanel('clinical');
+  document.getElementById('clinPatientSelect').value = id;
+  selectClinPatient();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CLINICAL VIEW
+   ══════════════════════════════════════════════════════════════════ */
+function renderClinSelect() {
+  const active = db.patients.filter(p => p.status !== 'discharged');
+  const sel    = document.getElementById('clinPatientSelect');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Select patient —</option>' +
+    active.map(p => `<option value="${p.id}">${p.name} — ${p.chiefComplaint}</option>`).join('');
+}
+
+function selectClinPatient() {
+  const id = document.getElementById('clinPatientSelect').value;
+  if (!id) return;
+
+  const p  = db.patients.find(x => x.id === id);
+  const v  = db.vitals.find(x => x.patientId === id);
+  const dx = db.diagnoses.find(x => x.patientId === id);
+  const [bg, fc] = avatarColor(p.name);
+  const age = new Date().getFullYear() - new Date(p.dob).getFullYear();
+
+  document.getElementById('clinPatientName').textContent = p.name;
+  document.getElementById('clinPatientMeta').textContent = `${age} yrs · ${p.gender} · Arrived ${timeAgo(p.arrivedAt)}`;
+  const prBadge = document.getElementById('clinPriorityBadge');
+  if (prBadge) prBadge.innerHTML = v ? priorityBadge(v.priority) : statusBadge(p.status);
+
+  // Vitals
+  const vitalsDisplay = document.getElementById('vitalsDisplay');
+  if (v) {
+    if (vitalsDisplay) vitalsDisplay.style.display = 'block';
+    const fhr = v.hr > 120 ? 'danger' : v.hr > 100 ? 'warn' : 'ok';
+    const fsp = v.spo2 < 90 ? 'danger' : v.spo2 < 95 ? 'warn' : 'ok';
+    const ftp = v.temp > 39 ? 'danger' : v.temp > 38 ? 'warn' : 'ok';
+    const vGrid = document.getElementById('vitalsGrid');
+    if (vGrid) vGrid.innerHTML = `
+      <div class="vital-box"><div class="vital-label">Blood Pressure</div><div class="vital-value">${v.bp}</div><div class="vital-unit">mmHg</div></div>
+      <div class="vital-box"><div class="vital-label">Heart Rate</div><div class="vital-value">${v.hr}</div><div class="vital-flag ${fhr}">${v.hr>120?'⚠ High':v.hr>100?'↑ Elevated':'✓ Normal'}</div></div>
+      <div class="vital-box"><div class="vital-label">SpO₂</div><div class="vital-value">${v.spo2}%</div><div class="vital-flag ${fsp}">${v.spo2<90?'⚠ Critical':v.spo2<95?'↓ Low':'✓ Normal'}</div></div>
+      <div class="vital-box"><div class="vital-label">Temperature</div><div class="vital-value">${v.temp}</div><div class="vital-flag ${ftp}">${v.temp>39?'⚠ High':v.temp>38?'↑ Elevated':'✓ Normal'}<div class="vital-unit">°C</div></div></div>
+      <div class="vital-box"><div class="vital-label">Pain Scale</div><div class="vital-value">${v.painScale}</div><div class="vital-unit">/10</div></div>
+      <div class="vital-box"><div class="vital-label">Priority</div><div style="margin-top:4px">${priorityBadge(v.priority)}</div></div>`;
+  } else {
+    if (vitalsDisplay) vitalsDisplay.style.display = 'none';
+  }
+
+  // Patient info card
+  const infoEl = document.getElementById('clinPatientInfo');
+  if (infoEl) infoEl.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="width:48px;height:48px;border-radius:50%;background:${bg};color:${fc};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">
+        ${p.name.split(' ').map(n => n[0]).join('').slice(0,2)}
+      </div>
+      <div>
+        <div style="font-weight:600;font-size:14px">${p.name}</div>
+        <div style="font-size:12px;color:#64748B">${p.nationalId}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px">
+      <div><span style="color:#94A3B8">DOB</span><br><strong>${p.dob}</strong></div>
+      <div><span style="color:#94A3B8">Gender</span><br><strong>${p.gender}</strong></div>
+      <div style="grid-column:span 2"><span style="color:#94A3B8">Chief Complaint</span><br><strong>${p.chiefComplaint}</strong></div>
+      <div><span style="color:#94A3B8">Status</span><br>${statusBadge(p.status)}</div>
+    </div>`;
+
+  // Prior diagnosis
+  const priorEl = document.getElementById('priorDx');
+  if (dx) {
+    const rxHTML = dx.prescriptions.map(r =>
+      `<div style="font-size:12px;background:#F8FAFF;border:1px solid #E2E8F0;border-radius:8px;padding:8px;margin-top:6px">
+        <strong>${r.drug}</strong> <span style="color:#94A3B8;font-size:10px">${r.ndc}</span>
+        <br><span style="color:#64748B">${r.dose}</span>
+      </div>`
+    ).join('');
+    if (priorEl) priorEl.innerHTML = `
+      <div style="font-size:13px;margin-bottom:8px"><code style="background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:11px">${dx.icd10Code}</code></div>
+      <div style="font-weight:500;font-size:13px;color:#0F172A;margin-bottom:6px">${dx.diagnosis}</div>
+      <div style="font-size:12.5px;color:#475569;margin-bottom:8px">${dx.treatment}</div>
+      ${rxHTML}`;
+
+    // Pre-fill form
+    document.getElementById('dxICD').value       = dx.icd10Code;
+    document.getElementById('dxText').value      = dx.diagnosis;
+    document.getElementById('dxTreatment').value = dx.treatment;
+    prescriptions = [...dx.prescriptions];
+    renderPrescriptionList();
+  } else {
+    if (priorEl) priorEl.innerHTML = '<div style="font-size:13px;color:#94A3B8">No prior diagnosis</div>';
+    document.getElementById('dxICD').value       = '';
+    document.getElementById('dxText').value      = '';
+    document.getElementById('dxTreatment').value = '';
+    prescriptions = [];
+    renderPrescriptionList();
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DRUG SEARCH & PRESCRIPTIONS
+   ══════════════════════════════════════════════════════════════════ */
+function searchDrug() {
+  const q  = document.getElementById('drugSearch').value.toLowerCase();
+  const dd = document.getElementById('drugDropdown');
+  if (!q || q.length < 2) { dd?.classList.remove('open'); return; }
+
+  const matches = db.drugs.filter(d =>
+    d.name.toLowerCase().includes(q) || d.ndc.includes(q)
+  );
+  if (dd) {
+    dd.innerHTML = matches.map(d =>
+      `<div class="autocomplete-item" onclick="pickDrug('${d.ndc}','${d.name}','${d.category}')">
+        <span class="drug-name">${d.name}</span>
+        <span class="drug-cat">${d.category}</span>
+      </div>`
+    ).join('') || '<div class="autocomplete-item" style="color:#94A3B8">No matches</div>';
+    dd.classList.add('open');
+  }
+}
+
+function pickDrug(ndc, name, cat) {
+  selectedDrug = { ndc, name, category: cat };
+  document.getElementById('drugSearch').value = name;
+  const selEl = document.getElementById('drugSelected');
+  if (selEl) selEl.innerHTML = `<i class="ti ti-check" style="color:#16A34A"></i> NDC: ${ndc} · ${cat}`;
+  document.getElementById('drugDropdown')?.classList.remove('open');
+}
+
+function addPrescription() {
+  if (!selectedDrug) { alert('Select a drug first'); return; }
+  const dose = document.getElementById('drugDose').value;
+  if (!dose)  { alert('Enter dosage instructions'); return; }
+
+  prescriptions.push({ ndc: selectedDrug.ndc, drug: selectedDrug.name, dose });
+  selectedDrug = null;
+  document.getElementById('drugSearch').value = '';
+  document.getElementById('drugDose').value   = '';
+  const selEl = document.getElementById('drugSelected');
+  if (selEl) selEl.innerHTML = '';
+  renderPrescriptionList();
+}
+
+function removePrescription(i) {
+  prescriptions.splice(i, 1);
+  renderPrescriptionList();
+}
+
+function renderPrescriptionList() {
+  const el = document.getElementById('prescriptionList');
+  if (!el) return;
+  el.innerHTML = prescriptions.map((rx, i) =>
+    `<div style="display:flex;align-items:center;gap:8px;background:#F0FDF4;border:1px solid #DCFCE7;border-radius:8px;padding:8px 12px;margin-bottom:6px">
+      <i class="ti ti-pill" style="color:#16A34A;font-size:15px;flex-shrink:0"></i>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12.5px;font-weight:500;color:#0F172A">${rx.drug}</div>
+        <div style="font-size:11px;color:#64748B">${rx.ndc} · ${rx.dose}</div>
+      </div>
+      <button onclick="removePrescription(${i})" style="color:#94A3B8;font-size:14px;flex-shrink:0"><i class="ti ti-x"></i></button>
+    </div>`
+  ).join('');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SUBMIT DIAGNOSIS
+   ══════════════════════════════════════════════════════════════════ */
+function submitDiagnosis() {
+  const patId     = document.getElementById('clinPatientSelect').value;
+  const icd       = document.getElementById('dxICD').value.trim();
+  const text      = document.getElementById('dxText').value.trim();
+  const treatment = document.getElementById('dxTreatment').value.trim();
+  const outcome   = document.getElementById('dxOutcome').value;
+
+  if (!patId)               { alert('Select a patient'); return; }
+  if (!icd || !text || !treatment) { alert('Fill in diagnosis, ICD-10, and treatment plan'); return; }
+  if (!outcome)             { alert('Select a patient outcome'); return; }
+
+  const existing = db.diagnoses.findIndex(d => d.patientId === patId);
+  const entry = {
+    id: 'd' + Date.now(),
+    patientId: patId,
+    doctorId:  currentUser.id,
+    icd10Code: icd,
+    diagnosis: text,
+    treatment,
+    prescriptions: [...prescriptions],
+    outcome,
+    timestamp: new Date().toISOString()
+  };
+
+  if (existing >= 0) db.diagnoses[existing] = entry; else db.diagnoses.push(entry);
+
+  const patient = db.patients.find(p => p.id === patId);
+  patient.status          = outcome;
+  patient.assignedDoctorId = currentUser.id;
+
+  if (outcome === 'discharged' && patient.bedId) {
+    const bed = db.beds.find(b => b.id === patient.bedId);
+    if (bed) { bed.status = 'available'; delete bed.patientId; }
+    patient.bedId = null;
+  }
+
+  addAuditLog(outcome === 'discharged' ? 'PATIENT_DISCHARGED' : 'DIAGNOSIS_ENTERED', patient.name);
+  saveDB(db); db = loadDB(); renderAll(); showPanel('mypatients');
+  alert(`Record submitted for ${patient.name}. Outcome: ${outcome.toUpperCase()}`);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DISCHARGE HISTORY
+   ══════════════════════════════════════════════════════════════════ */
+function renderHistory() {
+  const el = document.getElementById('historyTable');
+  if (!el) return;
+  el.innerHTML = db.diagnoses
+    .filter(d => d.doctorId === currentUser.id)
+    .map(d => {
+      const p = db.patients.find(x => x.id === d.patientId);
+      return `<tr>
+        <td class="name">${p?.name || '?'}</td>
+        <td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.diagnosis}</td>
+        <td><code style="background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:11px">${d.icd10Code}</code></td>
+        <td>${d.outcome ? statusBadge(d.outcome) : '<span class="badge badge-gray">Pending</span>'}</td>
+        <td style="font-size:12px;white-space:nowrap">${timeAgo(d.timestamp)}</td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="5" style="text-align:center;color:#94A3B8;padding:20px">No records yet</td></tr>';
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PANEL NAVIGATION
+   ══════════════════════════════════════════════════════════════════ */
+const PM = {
+  mypatients: ['My Patients',       'Active patients under your care'],
+  clinical:   ['Clinical View',     'Examination, diagnosis, and prescriptions'],
+  history:    ['Discharge History', 'Completed clinical records'],
+};
+
+function showPanel(id) {
+  if (window.innerWidth <= 768) closeSidebar();
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  const link = document.querySelector(`.sidebar-link[onclick*="'${id}'"]`);
+  if (link) link.classList.add('active');
+  const [t, s] = PM[id] || ['Panel', ''];
+  document.getElementById('panelTitle').textContent = t;
+  document.getElementById('panelSub').textContent   = s;
+  if (id === 'clinical') renderClinSelect();
+}
+
+init();

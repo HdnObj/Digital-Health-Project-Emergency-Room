@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERMS — My Record</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/patient.css">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="shell">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <i class="ti ti-activity-heartbeat"></i>
+      </div>
+      <div>
+        <div class="sidebar-logo-text">ERMS</div>
+        <div class="sidebar-logo-sub">Patient Portal</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">My Visit</div>
+    <a class="sidebar-link active" onclick="showPanel('overview')" href="#">
+      <i class="ti ti-layout-dashboard"></i> Overview
+    </a>
+    <a class="sidebar-link" onclick="showPanel('vitals')" href="#">
+      <i class="ti ti-activity-heartbeat"></i> My Vitals
+    </a>
+    <a class="sidebar-link" onclick="showPanel('diagnosis')" href="#">
+      <i class="ti ti-notes-medical"></i> Diagnosis &amp; Meds
+    </a>
+
+    <div class="sidebar-section">Info</div>
+    <a class="sidebar-link" onclick="showPanel('info')" href="#">
+      <i class="ti ti-user-circle"></i> Personal Info
+    </a>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">PT</div>
+        <div>
+          <div class="sidebar-user-name" id="sidebarName">Patient</div>
+          <div class="sidebar-user-role">Patient</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">
+        <i class="ti ti-logout"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <div class="content-wrap">
+
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+        <i class="ti ti-menu-2"></i>
+      </button>
+      <div class="topbar-left">
+        <div class="topbar-title-wrap">
+          <div class="topbar-title" id="panelTitle">My Overview</div>
+          <div class="topbar-sub" id="panelSub">Your current ER visit status</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn hide-mobile"><i class="ti ti-bell"></i></button>
+        <div class="topbar-avatar" id="topbarAvatar">PT</div>
+      </div>
+    </header>
+
+    <main class="main">
+
+
+      <!-- ══════════════════════════════════════
+           PANEL: Overview
+           ══════════════════════════════════════ -->
+      <div class="panel active" id="panel-overview">
+
+        <!-- Status Banner -->
+        <div class="pt-status-banner" id="statusBanner">
+          <div class="pt-status-icon" id="statusIcon">
+            <i class="ti ti-clock"></i>
+          </div>
+          <div class="pt-status-content">
+            <div class="pt-status-label">Current Status</div>
+            <div class="pt-status-value" id="statusValue">Loading…</div>
+            <div class="pt-status-desc" id="statusDesc">Retrieving your visit information</div>
+          </div>
+          <div class="pt-status-badge" id="statusBadge"></div>
+        </div>
+
+        <!-- Quick Info Cards -->
+        <div class="pt-quick-grid">
+          <div class="pt-quick-card">
+            <div class="pt-quick-icon pt-quick-icon--blue">
+              <i class="ti ti-bed"></i>
+            </div>
+            <div class="pt-quick-label">Bed / Ward</div>
+            <div class="pt-quick-value" id="qBed">—</div>
+          </div>
+          <div class="pt-quick-card">
+            <div class="pt-quick-icon pt-quick-icon--teal">
+              <i class="ti ti-stethoscope"></i>
+            </div>
+            <div class="pt-quick-label">Triage Nurse</div>
+            <div class="pt-quick-value" id="qNurse">—</div>
+          </div>
+          <div class="pt-quick-card">
+            <div class="pt-quick-icon pt-quick-icon--purple">
+              <i class="ti ti-user-heart"></i>
+            </div>
+            <div class="pt-quick-label">Attending Doctor</div>
+            <div class="pt-quick-value" id="qDoctor">—</div>
+          </div>
+          <div class="pt-quick-card">
+            <div class="pt-quick-icon pt-quick-icon--amber">
+              <i class="ti ti-clock"></i>
+            </div>
+            <div class="pt-quick-label">Time in ER</div>
+            <div class="pt-quick-value" id="qTime">—</div>
+          </div>
+        </div>
+
+        <!-- Visit Journey Timeline -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Visit Journey</div>
+              <div class="card-subtitle">Your progress through the ER</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="journey-timeline" id="journeyTimeline"></div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="pt-action-row">
+          <button class="pt-action-btn pt-action-btn--teal" onclick="showPanel('vitals')">
+            <i class="ti ti-activity-heartbeat"></i>
+            <span>View My Vitals</span>
+          </button>
+          <button class="pt-action-btn pt-action-btn--purple" onclick="showPanel('diagnosis')">
+            <i class="ti ti-notes-medical"></i>
+            <span>Diagnosis &amp; Medications</span>
+          </button>
+          <button class="pt-action-btn pt-action-btn--blue" onclick="showPanel('info')">
+            <i class="ti ti-user-circle"></i>
+            <span>My Information</span>
+          </button>
+        </div>
+
+      </div><!-- /panel-overview -->
+
+
+      <!-- ══════════════════════════════════════
+           PANEL: My Vitals
+           ══════════════════════════════════════ -->
+      <div class="panel" id="panel-vitals">
+
+        <!-- Priority Badge Block -->
+        <div class="pt-priority-block" id="priorityBlock">
+          <div id="priorityBlockContent">
+            <div class="empty-state">
+              <i class="ti ti-stethoscope empty-state-icon"></i>
+              <div>No vitals recorded yet.</div>
+              <div class="empty-state-sub">A nurse will record your vital signs during triage.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vitals Cards Grid -->
+        <div class="vitals-detail-grid" id="vitalsDetailGrid">
+          <!-- Populated by patient.js -->
+        </div>
+
+        <!-- Vitals Explanation -->
+        <div class="card pt-info-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><i class="ti ti-info-circle"></i> Understanding Your Vitals</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="vitals-explain-grid">
+              <div class="vitals-explain-item">
+                <div class="vitals-explain-label">Blood Pressure</div>
+                <div class="vitals-explain-text">
+                  Measures the force of blood against artery walls.
+                  Normal range: <strong>90/60 – 120/80 mmHg</strong>
+                </div>
+              </div>
+              <div class="vitals-explain-item">
+                <div class="vitals-explain-label">Heart Rate</div>
+                <div class="vitals-explain-text">
+                  Number of heartbeats per minute.
+                  Normal range: <strong>60 – 100 bpm</strong>
+                </div>
+              </div>
+              <div class="vitals-explain-item">
+                <div class="vitals-explain-label">Oxygen Saturation (SpO₂)</div>
+                <div class="vitals-explain-text">
+                  Percentage of oxygen in your blood.
+                  Normal range: <strong>95 – 100%</strong>
+                </div>
+              </div>
+              <div class="vitals-explain-item">
+                <div class="vitals-explain-label">Body Temperature</div>
+                <div class="vitals-explain-text">
+                  Core body heat measurement.
+                  Normal range: <strong>36.1 – 37.2°C</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /panel-vitals -->
+
+
+      <!-- ══════════════════════════════════════
+           PANEL: Diagnosis & Medications
+           ══════════════════════════════════════ -->
+      <div class="panel" id="panel-diagnosis">
+
+        <!-- Diagnosis Card -->
+        <div class="card" id="diagnosisCard">
+          <div class="card-header">
+            <div>
+              <div class="card-title">My Diagnosis</div>
+              <div class="card-subtitle">Information provided by your doctor</div>
+            </div>
+            <div id="dxOutcomeBadge"></div>
+          </div>
+          <div class="card-body" id="diagnosisContent">
+            <div class="empty-state">
+              <i class="ti ti-notes-medical empty-state-icon"></i>
+              <div>No diagnosis recorded yet.</div>
+              <div class="empty-state-sub">Your doctor will update this after your examination.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medications Card -->
+        <div class="card" id="medicationsCard">
+          <div class="card-header">
+            <div>
+              <div class="card-title">My Medications</div>
+              <div class="card-subtitle">Prescribed drugs and dosage instructions</div>
+            </div>
+            <span class="badge badge-blue" id="rxCount" style="display:none"></span>
+          </div>
+          <div class="card-body" id="medicationsContent">
+            <div class="empty-state">
+              <i class="ti ti-pill empty-state-icon"></i>
+              <div>No medications prescribed yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Important Note -->
+        <div class="pt-info-notice">
+          <i class="ti ti-shield-check"></i>
+          <div>
+            <strong>Important:</strong> Only take medications exactly as prescribed.
+            If you have questions about your treatment, ask your attending doctor or nurse.
+          </div>
+        </div>
+
+      </div><!-- /panel-diagnosis -->
+
+
+      <!-- ══════════════════════════════════════
+           PANEL: Personal Info
+           ══════════════════════════════════════ -->
+      <div class="panel" id="panel-info">
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Personal Information</div>
+              <div class="card-subtitle">Your registered details on file</div>
+            </div>
+          </div>
+          <div class="card-body">
+
+            <!-- Avatar + Name -->
+            <div class="pt-profile-header" id="ptProfileHeader">
+              <!-- Populated by patient.js -->
+            </div>
+
+            <!-- Info Grid -->
+            <div class="pt-info-grid" id="ptInfoGrid">
+              <!-- Populated by patient.js -->
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Privacy Notice -->
+        <div class="pt-privacy-notice">
+          <div class="pt-privacy-icon">
+            <i class="ti ti-lock"></i>
+          </div>
+          <div>
+            <div class="pt-privacy-title">Your Privacy is Protected</div>
+            <div class="pt-privacy-text">
+              Your medical information is confidential and only accessible to your care team.
+              This record is governed by hospital data protection policies.
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /panel-info -->
+
+    </main>
+  </div><!-- /content-wrap -->
+</div><!-- /shell -->
+
+<script src="js/auth.js"></script>
+<script src="js/patient.js"></script>
+</body>
+</html>
