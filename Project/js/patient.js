@@ -2,67 +2,81 @@
  * patient.js
  * ─────────────────────────────────────────────────────
  * ERMS Patient Portal
- *
- * Authentication strategy:
- *   Patients log in via the shared login page (index.html).
- *   Their record in db.users has role = 'patient' and a
- *   `nationalId` field that links to their entry in db.patients.
- *
- *   If a patient account doesn't exist in db.users yet, the
- *   system falls back to matching by nationalId stored in the
- *   session (set when admin/nurse registers them).
  * ─────────────────────────────────────────────────────
  */
 
-'use strict';
+  'use strict';
 
-let db          = null;
-let currentUser = null;   // from auth.js session
-let patient     = null;   // db.patients entry
+  let db          = null;
+  let currentUser = null;
+  let patient     = null;
 
-/* ════════════════════════════════════════════════════
-   INIT
-   ════════════════════════════════════════════════════ */
-function init() {
-  currentUser = requireAuth('patient');
-  if (!currentUser) return;
+  function init() {
+    db = loadDB();
 
-  db = loadDB();
+    const params      = new URLSearchParams(window.location.search);
+    const isAdminView = params.get('adminView') === '1';
+    const adminPtId   = params.get('patientId');
 
-  /* Find matching patient record — by nationalId field on user
-     or by id if the user IS the patient record (some setups). */
-  patient = db.patients.find(p =>
-    p.nationalId === currentUser.nationalId ||
-    p.id         === currentUser.patientId  ||
-    p.nationalId === currentUser.username
-  );
+    if (isAdminView && adminPtId) {
+      const session = JSON.parse(sessionStorage.getItem('erms_session') || 'null');
 
-  if (!patient) {
-    // Fallback: look for a patient whose name matches the user name
-    patient = db.patients.find(p => p.name === currentUser.name);
+      if (!session || session.role !== 'admin') {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      currentUser = session;
+      patient     = db.patients.find(p => p.id === adminPtId);
+
+      if (!patient) {
+        alert('Patient record not found.');
+        window.close();
+        return;
+      }
+
+      const initials = patient.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+      document.getElementById('sidebarAvatar').textContent = initials;
+      document.getElementById('sidebarName').textContent   = patient.name.split(' ')[0];
+      document.getElementById('topbarAvatar').textContent  = initials;
+
+      showAdminViewBanner();
+      renderAll();
+      return;
+    }
+
+    currentUser = requireAuth('patient');
+    if (!currentUser) return;
+
+    patient = db.patients.find(p =>
+      p.nationalId === currentUser.nationalId ||
+      p.id         === currentUser.patientId  ||
+      p.nationalId === currentUser.username
+    );
+
+    if (!patient) patient = db.patients.find(p => p.name === currentUser.name);
+
+    if (!patient) {
+      alert('No patient record found for your account. Please contact the front desk.');
+      doLogout();
+      return;
+    }
+
+    const initials = patient.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    document.getElementById('sidebarAvatar').textContent = initials;
+    document.getElementById('sidebarName').textContent   = patient.name.split(' ')[0];
+    document.getElementById('topbarAvatar').textContent  = initials;
+
+    renderAll();
   }
 
-  if (!patient) {
-    alert('No patient record found for your account. Please contact the front desk.');
-    doLogout();
-    return;
+
+  function renderAll() {
+    renderOverview();
+    renderVitals();
+    renderDiagnosis();
+    renderPersonalInfo();
   }
-
-  /* Personalise the UI */
-  const initials = patient.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-  document.getElementById('sidebarAvatar').textContent = initials;
-  document.getElementById('sidebarName').textContent   = patient.name.split(' ')[0]; // first name only
-  document.getElementById('topbarAvatar').textContent  = initials;
-
-  renderAll();
-}
-
-function renderAll() {
-  renderOverview();
-  renderVitals();
-  renderDiagnosis();
-  renderPersonalInfo();
-}
 
 
 /* ════════════════════════════════════════════════════
@@ -136,11 +150,10 @@ function renderStatusBanner() {
 
   const info = STATUS_MAP[patient.status] || STATUS_MAP['waiting'];
 
-  // Remove old modifier classes
   banner.className = banner.className.replace(/status-banner--\S+/g, '').trim();
   banner.classList.add('pt-status-banner', info.cls);
 
-  icon.innerHTML  = `<i class="ti ${info.icon}"></i>`;
+  icon.innerHTML     = `<i class="ti ${info.icon}"></i>`;
   valEl.textContent  = info.label;
   descEl.textContent = info.desc;
   badgeEl.innerHTML  = info.badge;
@@ -148,7 +161,6 @@ function renderStatusBanner() {
 
 /* Quick Cards */
 function renderQuickCards() {
-  const vitals = db.vitals.find(v => v.patientId === patient.id);
   const nurse  = patient.triageNurseId
     ? db.users.find(u => u.id === patient.triageNurseId)?.name || '—'
     : '—';
@@ -260,7 +272,6 @@ function renderVitals() {
     return;
   }
 
-  /* Priority banner */
   const priorityInfo = getPriorityInfo(vitals.priority);
   block.innerHTML = `
     <div class="pt-priority-display ${priorityInfo.cls}">
@@ -271,50 +282,13 @@ function renderVitals() {
       </div>
     </div>`;
 
-  /* Vital sign cards */
   const cards = [
-    {
-      label : 'Blood Pressure',
-      value : vitals.bp,
-      unit  : 'mmHg',
-      icon  : 'ti-gauge',
-      status: evalBP(vitals.bp),
-    },
-    {
-      label : 'Heart Rate',
-      value : vitals.hr,
-      unit  : 'bpm',
-      icon  : 'ti-heart',
-      status: vitals.hr > 120 ? 'critical' : vitals.hr > 100 ? 'elevated' : 'normal',
-    },
-    {
-      label : 'Oxygen Saturation',
-      value : vitals.spo2 + '%',
-      unit  : 'SpO₂',
-      icon  : 'ti-lungs',
-      status: vitals.spo2 < 90 ? 'critical' : vitals.spo2 < 95 ? 'elevated' : 'normal',
-    },
-    {
-      label : 'Body Temperature',
-      value : vitals.temp + '°',
-      unit  : '°C',
-      icon  : 'ti-thermometer',
-      status: vitals.temp > 39 ? 'critical' : vitals.temp > 38 ? 'elevated' : 'normal',
-    },
-    {
-      label : 'Pain Level',
-      value : vitals.painScale + '/10',
-      unit  : 'Self-reported',
-      icon  : 'ti-mood-sad',
-      status: vitals.painScale >= 8 ? 'critical' : vitals.painScale >= 5 ? 'elevated' : 'normal',
-    },
-    {
-      label : 'Priority Level',
-      value : vitals.priority.split('-')[0],
-      unit  : vitals.priority.split('-')[1] || '',
-      icon  : 'ti-flag',
-      status: vitals.priority.startsWith('P1') ? 'critical' : vitals.priority.startsWith('P2') ? 'elevated' : 'normal',
-    },
+    { label: 'Blood Pressure',     value: vitals.bp,              unit: 'mmHg',        icon: 'ti-gauge',       status: evalBP(vitals.bp) },
+    { label: 'Heart Rate',         value: vitals.hr,              unit: 'bpm',          icon: 'ti-heart',       status: vitals.hr > 120 ? 'critical' : vitals.hr > 100 ? 'elevated' : 'normal' },
+    { label: 'Oxygen Saturation',  value: vitals.spo2 + '%',      unit: 'SpO₂',         icon: 'ti-lungs',       status: vitals.spo2 < 90 ? 'critical' : vitals.spo2 < 95 ? 'elevated' : 'normal' },
+    { label: 'Body Temperature',   value: vitals.temp + '°',      unit: '°C',           icon: 'ti-thermometer', status: vitals.temp > 39 ? 'critical' : vitals.temp > 38 ? 'elevated' : 'normal' },
+    { label: 'Pain Level',         value: vitals.painScale+'/10', unit: 'Self-reported', icon: 'ti-mood-sad',    status: vitals.painScale >= 8 ? 'critical' : vitals.painScale >= 5 ? 'elevated' : 'normal' },
+    { label: 'Priority Level',     value: vitals.priority.split('-')[0], unit: vitals.priority.split('-')[1] || '', icon: 'ti-flag', status: vitals.priority.startsWith('P1') ? 'critical' : vitals.priority.startsWith('P2') ? 'elevated' : 'normal' },
   ];
 
   grid.innerHTML = cards.map(c => {
@@ -352,9 +326,9 @@ function evalBP(bp) {
 
 function getStatusLabel(status) {
   switch (status) {
-    case 'critical': return ['Critical',  '⚠'];
-    case 'elevated': return ['Elevated',  '↑'];
-    default:         return ['Normal',    '✓'];
+    case 'critical': return ['Critical', '⚠'];
+    case 'elevated': return ['Elevated', '↑'];
+    default:         return ['Normal',   '✓'];
   }
 }
 
@@ -386,10 +360,8 @@ function renderDiagnosis() {
     return;
   }
 
-  /* Outcome badge */
   badgeEl.innerHTML = statusBadge(dx.outcome || 'pending');
 
-  /* Diagnosis info */
   dxContent.innerHTML = `
     <div class="dx-icd-row">
       <span class="dx-icd-tag">${dx.icd10Code}</span>
@@ -403,9 +375,8 @@ function renderDiagnosis() {
     <div class="dx-treatment">${dx.treatment}</div>
     ${dx.timestamp ? `<div class="dx-time"><i class="ti ti-clock"></i> Recorded ${timeAgo(dx.timestamp)}</div>` : ''}`;
 
-  /* Medications */
   const prescriptions = dx.prescriptions || [];
-  rxCount.textContent  = prescriptions.length + ' medication' + (prescriptions.length !== 1 ? 's' : '');
+  rxCount.textContent   = prescriptions.length + ' medication' + (prescriptions.length !== 1 ? 's' : '');
   rxCount.style.display = prescriptions.length ? 'inline-flex' : 'none';
 
   if (!prescriptions.length) {
@@ -451,14 +422,14 @@ function renderPersonalInfo() {
     : '—';
 
   const fields = [
-    { icon: 'ti-id',              label: 'National ID',      value: patient.nationalId },
-    { icon: 'ti-calendar',        label: 'Date of Birth',    value: patient.dob || '—' },
-    { icon: 'ti-user',            label: 'Age',              value: age },
-    { icon: 'ti-gender-androgyne',label: 'Gender',           value: patient.gender || '—' },
-    { icon: 'ti-phone',           label: 'Phone',            value: patient.phone || '—' },
-    { icon: 'ti-notes-medical',   label: 'Chief Complaint',  value: patient.chiefComplaint || '—' },
-    { icon: 'ti-clock',           label: 'Arrived',          value: patient.arrivedAt ? timeAgo(patient.arrivedAt) : '—' },
-    { icon: 'ti-bed',             label: 'Bed / Ward',       value: patient.bedId
+    { icon: 'ti-id',               label: 'National ID',     value: patient.nationalId },
+    { icon: 'ti-calendar',         label: 'Date of Birth',   value: patient.dob || '—' },
+    { icon: 'ti-user',             label: 'Age',             value: age },
+    { icon: 'ti-gender-androgyne', label: 'Gender',          value: patient.gender || '—' },
+    { icon: 'ti-phone',            label: 'Phone',           value: patient.phone || '—' },
+    { icon: 'ti-notes-medical',    label: 'Chief Complaint', value: patient.chiefComplaint || '—' },
+    { icon: 'ti-clock',            label: 'Arrived',         value: patient.arrivedAt ? timeAgo(patient.arrivedAt) : '—' },
+    { icon: 'ti-bed',              label: 'Bed / Ward',      value: patient.bedId
         ? (db.beds.find(b => b.id === patient.bedId)?.ward || '—')
         : 'Not assigned' },
   ];
@@ -478,10 +449,10 @@ function renderPersonalInfo() {
    PANEL NAVIGATION
    ════════════════════════════════════════════════════ */
 const PANEL_META = {
-  overview  : ['My Overview',            'Your current ER visit status'],
-  vitals    : ['My Vitals',              'Recorded vital signs from triage'],
-  diagnosis : ['Diagnosis & Medications','Your diagnosis and prescribed medications'],
-  info      : ['Personal Information',   'Your registered details on file'],
+  overview  : ['My Overview',             'Your current ER visit status'],
+  vitals    : ['My Vitals',               'Recorded vital signs from triage'],
+  diagnosis : ['Diagnosis & Medications', 'Your diagnosis and prescribed medications'],
+  info      : ['Personal Information',    'Your registered details on file'],
 };
 
 function showPanel(id) {
@@ -498,6 +469,30 @@ function showPanel(id) {
   const [title, sub] = PANEL_META[id] || ['Portal', ''];
   document.getElementById('panelTitle').textContent = title;
   document.getElementById('panelSub').textContent   = sub;
+}
+
+
+/* ════════════════════════════════════════════════════
+   ADMIN VIEW BANNER
+   ════════════════════════════════════════════════════ */
+function showAdminViewBanner() {
+  const banner = document.createElement('div');
+  banner.style.cssText = [
+    'position:fixed;top:0;left:0;right:0;z-index:9999',
+    'background:#1D4ED8;color:#fff;text-align:center',
+    'padding:7px 16px;font-size:13px;font-weight:500;display:flex',
+    'align-items:center;justify-content:center;gap:10px'
+  ].join(';');
+  banner.innerHTML =
+    '<i class="ti ti-shield-check"></i>' +
+    '<span>Admin view — read-only preview of patient portal</span>' +
+    '<button onclick="window.close()" style="' +
+      'background:rgba(255,255,255,.2);border:none;color:#fff;' +
+      'border-radius:5px;padding:2px 10px;cursor:pointer;font-size:12px;' +
+      'font-family:inherit' +
+    '">Close tab</button>';
+  document.body.prepend(banner);
+  document.body.style.paddingTop = '38px';
 }
 
 

@@ -8,24 +8,45 @@ let recentStaff  = [];
 /* ══════════════════════════════════════════════════════════════════
    INIT
    ══════════════════════════════════════════════════════════════════ */
+
 function init() {
-  currentUser = requireAuth('admin');
+  db = loadDB();
+  // 1. Ensure the user is actually an Admin
+  currentUser = requireAuth('admin'); 
   if (!currentUser) return;
 
-  document.getElementById('sidebarAvatar').textContent = currentUser.avatar;
-  document.getElementById('sidebarName').textContent   = currentUser.name;
-  document.getElementById('topbarAvatar').textContent  = currentUser.avatar;
+  const params = new URLSearchParams(window.location.search);
+  const isAdminView = params.get('adminView') === '1';
+  const adminPtId = params.get('patientId');
 
-  db = loadDB();
+  // Logic for Admin viewing a specific patient record
+  if (isAdminView && adminPtId) {
+    const session = JSON.parse(sessionStorage.getItem('erms_session') || 'null');
+    const patientRecord = db.patients.find(p => p.id === adminPtId);
+    if (!patientRecord) {
+      alert('Patient record not found.');
+      return;
+    }
+    // Set UI for "Peeking" mode
+    setupUserInterface(currentUser.name, currentUser.avatar);
+    showAdminViewBanner(); 
+  } else {
+    // Standard Admin Dashboard Logic
+    setupUserInterface(currentUser.name, currentUser.avatar);
+  }
+
   renderAll();
-
-  // Live preview wiring for create-staff form
-  ['sf-name','sf-username','sf-dept','sf-avatar'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', updateStaffPreview);
-  });
 }
 
+function setupUserInterface(name, avatar) {
+  const sidebarAvatar = document.getElementById('sidebarAvatar');
+  const sidebarName = document.getElementById('sidebarName');
+  const topbarAvatar = document.getElementById('topbarAvatar');
+
+  if (sidebarAvatar) sidebarAvatar.textContent = avatar || "AD";
+  if (sidebarName) sidebarName.textContent = name.split(' ')[0];
+  if (topbarAvatar) topbarAvatar.textContent = avatar || "AD";
+}
 function renderAll() {
   renderStats();
   renderCDS();
@@ -336,6 +357,12 @@ function viewPatientDetail(id) {
       <div style="font-size:13.5px;font-weight:600;color:#0F172A">${dx.diagnosis}</div>
       <div style="font-size:12.5px;color:#475569;margin-top:4px">${dx.treatment}</div>
     </div>` : ''}`;
+      document.querySelector('#patientDetailModal .modal-footer').innerHTML = `
+    <button class="btn btn-secondary" onclick="closeModal('patientDetailModal')">Close</button>
+    <button class="btn btn-primary" onclick="openPatientPortal('${p.id}')">
+      <i class="ti ti-external-link"></i> Open Patient Portal
+    </button>
+  `;
 
   openModal('patientDetailModal');
 }
@@ -542,6 +569,19 @@ function submitAddPatient() {
     arrivedAt: new Date().toISOString()
   };
 
+  // ── Auto-create a patient login account ──
+  if (!db.users.find(u => u.username === nid)) {
+    db.users.push({
+      id:         'u' + Date.now() + 'pt',
+      username:   nid,
+      password:   dob || nid,   // dob as default password, falls back to nationalId
+      role:       'patient',
+      name:       name,
+      nationalId: nid
+    });
+  }
+
+
   db.patients.push(newPt);
   addAuditLog('PATIENT_REGISTERED', name);
   saveDB(db); db = loadDB(); renderAll();
@@ -585,6 +625,9 @@ function showToast(msg, isErr = false) {
    ══════════════════════════════════════════════════════════════════ */
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openPatientPortal(patientId) {
+  window.open(`patient.html?adminView=1&patientId=${patientId}`, '_blank');
+}
 
 /* ══════════════════════════════════════════════════════════════════
    PANEL NAVIGATION

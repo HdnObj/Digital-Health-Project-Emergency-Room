@@ -1,6 +1,7 @@
 {
   "users": [
     { "id": "u1", "username": "admin",  "password": "admin123", "role": "admin",  "name": "Omar Hassan",    "department": "Management",        "avatar": "OH" },
+    { "id": "u4", "username": "pat",  "password": "patient123", "role": "patient",  "name": "Omar Ahmed",    "department": "Service",        "avatar": "SK" },
     { "id": "u2", "username": "nurse",  "password": "nurse123", "role": "nurse",  "name": "Sara Khalil",    "department": "Emergency",         "avatar": "SK" },
     { "id": "u3", "username": "doctor", "password": "doc123",   "role": "doctor", "name": "Dr. Ahmed Nour", "department": "Emergency Medicine", "avatar": "AN" }
   ],

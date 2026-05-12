@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/doctor.css">
 </head>
 <body>
 
@@ -207,95 +207,64 @@
 
       </div><!-- /panel-dashboard -->
 
-
-      <!-- ══════════════════════════════════════
-           PANEL: All Accounts
-           ══════════════════════════════════════ -->
-      <div class="panel" id="panel-accounts">
-
-        <!-- Quick-nav pills -->
-        <div class="acct-nav">
-          <a class="acct-nav-pill pill-pat" href="#sec-patients">
-            <i class="ti ti-user-heart"></i>
-            <span class="pill-label">Patients</span>
-            <span class="pill-ct" id="cnt-patients">0</span>
-          </a>
-          <a class="acct-nav-pill pill-nur" href="#sec-nurses">
-            <i class="ti ti-stethoscope"></i>
-            <span class="pill-label">Nurses</span>
-            <span class="pill-ct" id="cnt-nurses">0</span>
-          </a>
-          <a class="acct-nav-pill pill-doc" href="#sec-doctors">
-            <i class="ti ti-user-shield"></i>
-            <span class="pill-label">Doctors</span>
-            <span class="pill-ct" id="cnt-doctors">0</span>
-          </a>
-        </div>
-
-        <!-- Section 1: Patients -->
-        <div class="acct-section" id="sec-patients">
-          <div class="section-divider section-divider--pat">
-            <div class="section-divider-icon">
+     <!-- ══════════════════════════════════════
+      PANEL: All Accounts
+      ══════════════════════════════════════ -->
+      <div class="acct-pane active" id="acct-pane-patients">
+        <div class="acct-pane-header">
+          <div class="acct-pane-title-wrap">
+            <div class="acct-pane-icon acct-pane-icon--pat">
               <i class="ti ti-user-heart"></i>
             </div>
             <div>
-              <div class="section-divider-title">Patient Accounts</div>
-              <div class="section-divider-sub">All registered ER patients — click a card for full record</div>
+              <h2 class="acct-pane-title">Patient Records</h2>
+              <p class="acct-pane-sub">Manage and monitor active ER admissions</p>
             </div>
-            <div class="section-divider-count" id="cnt-patients-hdr">0</div>
           </div>
-
-          <!-- Filter + Add -->
-          <div class="acct-toolbar">
-            <select class="form-input acct-filter" id="ptStatusFilter" onchange="renderPatientsSection()">
-              <option value="">All Status</option>
-              <option value="waiting">Waiting</option>
-              <option value="in-triage">In Triage</option>
-              <option value="under-treatment">Under Treatment</option>
-              <option value="discharged">Discharged</option>
-            </select>
-            <button class="btn btn-sm btn-primary" onclick="openModal('addPatientModal')">
-              <i class="ti ti-plus"></i> Add Patient
+          
+          <div class="acct-pane-actions">
+            <div class="search-pill">
+              <i class="ti ti-search"></i>
+              <input type="text" placeholder="Filter by name or ID..." oninput="filterPatients(this.value)">
+            </div>
+            <button class="btn btn-primary" onclick="openModal('addPatientModal')">
+              <i class="ti ti-plus"></i> New Admission
             </button>
           </div>
-
-          <!-- Patient Card Grid -->
-          <div class="pt-card-grid" id="patientCardGrid"></div>
         </div>
 
-        <!-- Section 2: Nurses -->
-        <div class="acct-section" id="sec-nurses">
-          <div class="section-divider section-divider--nur">
-            <div class="section-divider-icon">
-              <i class="ti ti-stethoscope"></i>
+        <div class="account-card-grid" id="patientCardGrid">
+          <div class="account-card priority-p1">
+            <div class="card-status-strip"></div>
+            <div class="card-main">
+              <div class="card-user-info">
+                <div class="avatar avatar--lg">JA</div>
+                <div>
+                  <div class="user-name">John Anderson</div>
+                  <div class="user-meta">ID: 29901010100001 • Male</div>
+                </div>
+              </div>
+              <div class="triage-tag tag-p1">P1 CRITICAL</div>
+              
+              <div class="card-details">
+                <div class="detail-item">
+                  <i class="ti ti-clippy"></i>
+                  <span>Chest pain and shortness of breath</span>
+                </div>
+                <div class="detail-item">
+                  <i class="ti ti-nurse"></i>
+                  <span>Nurse: <strong>Sara Khalil</strong></span>
+                </div>
+              </div>
             </div>
-            <div>
-              <div class="section-divider-title">Nurse Accounts</div>
-              <div class="section-divider-sub">Registered nursing staff and clinical activity</div>
+            <div class="card-actions">
+              <button class="btn-icon" title="View Full Record"><i class="ti ti-external-link"></i></button>
+              <button class="btn-icon" title="Edit Info"><i class="ti ti-edit"></i></button>
+              <button class="btn-icon btn-icon--danger" title="Discharge"><i class="ti ti-logout"></i></button>
             </div>
-            <div class="section-divider-count" id="cnt-nurses-hdr">0</div>
           </div>
-          <div class="staff-card-grid" id="nurseCardGrid"></div>
         </div>
-
-        <!-- Section 3: Doctors -->
-        <div class="acct-section" id="sec-doctors">
-          <div class="section-divider section-divider--doc">
-            <div class="section-divider-icon">
-              <i class="ti ti-user-shield"></i>
-            </div>
-            <div>
-              <div class="section-divider-title">Doctor Accounts</div>
-              <div class="section-divider-sub">Registered doctors and clinical records</div>
-            </div>
-            <div class="section-divider-count" id="cnt-doctors-hdr">0</div>
-          </div>
-          <div class="staff-card-grid" id="doctorCardGrid"></div>
-        </div>
-
-      </div><!-- /panel-accounts -->
-
-
+      </div>
       <!-- ══════════════════════════════════════
            PANEL: Create Staff
            ══════════════════════════════════════ -->

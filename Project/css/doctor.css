@@ -2,7 +2,50 @@
    DOCTOR.CSS — Doctor portal specific styles
    ══════════════════════════════════════════════════════════════════ */
 
-/* Patient card grid (My Patients panel) */
+/* ── Viewport lock — no full-page scroll ── */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.content-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.topbar {
+  flex-shrink: 0;
+}
+
+.stats-grid {
+  flex-shrink: 0;
+  padding: 20px 24px 0;
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding-top: 0;
+}
+
+/* ── Patient card grid (My Patients panel) ── */
 #patientCards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
