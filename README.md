@@ -18,24 +18,6 @@
 
 ---
 
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [The Clinical Problem We Solve](#-the-clinical-problem-we-solve)
-- [Key Features by Role](#-key-features-by-role)
-- [Technology Stack](#-technology-stack)
-- [System Architecture](#-system-architecture)
-- [Implementation Logic](#-implementation-logic)
-- [Patient Journey](#-patient-journey)
-- [Data Schema](#-data-schema-intelligent-integration-engine)
-- [Clinical Decision Support](#-clinical-decision-support-cds-widgets)
-- [Team](#-team)
-- [Technical Report](#-technical-report--documentation)
-- [Getting Started](#-getting-started)
-- [Acknowledgements](#-acknowledgements)
-
----
-
 ## 🧠 Overview
 
 The **Emergency Room Management System (ERMS)** is a high-fidelity, role-stratified clinical information platform engineered to address one of the most critical challenges in modern healthcare infrastructure: **the fragmentation of patient data across disconnected departmental silos.**
@@ -198,7 +180,7 @@ This system was designed and developed by a three-member engineering team as par
 | Admin | `admin` | `admin123` |
 | Doctor | `doctor` | `doc123` |
 | Nurse | `nurse` | `nurse123` |
-| Patient | -- | `From db.json file` |
+| Patient | `From db.json file` | `From db.json file` |
 
 ---
 
