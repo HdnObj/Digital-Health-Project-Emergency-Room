@@ -68,16 +68,6 @@ The ERMS collapses these silos through a **Unified Data Layer** — a structured
 
 ---
 
-## ✨ Key Features by Role
-
-### 🌐 Landing Page
-- Professional, medically-branded entry interface with a hospital-grade aesthetic
-- Secure **internal-only login** — no public registration pathway
-- All accounts are **pre-provisioned** within the system, reflecting the closed-ecosystem model of real hospital networks
-- Role validation occurs at authentication; unauthorized URL access triggers an immediate redirect
-
----
-
 ### 🔴 Admin Dashboard — Strategic Hospital Oversight
 - **Real-Time Capacity Monitor:** Live bed occupancy tracking across wards with color-coded utilization thresholds (green < 70%, amber 70–89%, red ≥ 90%)
 - **Staff Availability Panel:** On-duty/off-duty status for all registered clinical staff, filterable by shift and department
@@ -150,61 +140,15 @@ erms/
 ├── js/
 │   ├── auth.js          
 │   ├── admin.js              
-│   ├── nurse.js               
+│   ├── nurse.js
+│   ├── index.js
+│   ├── patient.js
+│   ├── landingpage.js
 │   └── doctor.js              
 │
 ├── data/
 │   └── db.json                      
 ```
-
----
-
-## ⚙️ Implementation Logic
-
-### Role-Based Access Control (RBAC)
-
-Authentication is implemented in `js/core/auth.js` using a **credential-lookup pattern** against `db.json`. Passwords are stored as SHA-256 hashes — never in plaintext. On successful login, a session object is written to `sessionStorage`:
-
-```javascript
-sessionStorage.setItem('erms_user', JSON.stringify({
-  id: user.id,
-  name: user.name,
-  role: user.role,           // "admin" | "nurse" | "doctor"
-  loginTime: new Date().toISOString()
-}));
-```
-
-Role-to-route mapping then determines the redirect destination:
-
-```javascript
-const routes = {
-  admin:  'pages/admin-dashboard.html',
-  nurse:  'pages/nurse-dashboard.html',
-  doctor: 'pages/doctor-dashboard.html'
-};
-window.location.href = routes[user.role];
-```
-
-**Route Guard** — Every dashboard page executes an immediately-invoked function expression (IIFE) from `router.js` before any content renders. If no valid session exists, or if the session role does not match the page's required role, the user is unconditionally redirected to `index.html`. This prevents URL-guessing attacks in the closed hospital ecosystem.
-
-`sessionStorage` is used deliberately over `localStorage` — session data is automatically purged when the browser tab closes, enforcing security hygiene on shared clinical workstations.
-
----
-
-### Database Simulation — The Intelligent Integration Engine
-
-`db.json` serves as the system's mock backend, structured around six primary collections that mirror HL7 FHIR resource types:
-
-| Collection | FHIR Equivalent | Description |
-|---|---|---|
-| `users` | `Practitioner` | Staff credentials, roles, department assignments |
-| `patients` | `Patient` + `Encounter` | Demographics, vitals, clinical notes, status |
-| `beds` | `Location` | Ward bed availability and occupancy state |
-| `staff` | `PractitionerRole` | On-duty status and shift assignments |
-| `auditLog` | `AuditEvent` | Immutable action log with actor, action, timestamp |
-| `interactions` | — | Mock drug-drug interaction reference table |
-
-All data reads and writes are routed exclusively through `js/core/api.js`. No other module calls `fetch()` directly. This single-gateway pattern mirrors the service layer architecture of production healthcare APIs and ensures that mock-to-real backend migration requires changes in exactly one file.
 
 ---
 
@@ -234,111 +178,18 @@ Every status transition writes a timestamped entry to `auditLog`, creating a leg
 
 ---
 
-## 🗄 Data Schema — Intelligent Integration Engine
-
-The `db.json` Patient object aligns with HL7 FHIR `Patient` and `Encounter` resource specifications:
-
-```json
-{
-  "id": "p001",
-  "fullName": "Mohamed Ali",
-  "nationalId": "29901012345678",
-  "dob": "1999-01-01",
-  "bloodType": "O+",
-  "allergies": ["Penicillin"],
-  "chronicConditions": ["Hypertension"],
-  "status": "in-progress",
-  "priority": "red",
-  "arrivalTime": "2025-06-01T09:15:00Z",
-  "chiefComplaint": "Chest pain radiating to left arm",
-  "vitals": {
-    "bloodPressure": { "systolic": 160, "diastolic": 95 },
-    "heartRate": 110,
-    "temperature": 37.2,
-    "oxygenSaturation": 94,
-    "respiratoryRate": 20
-  },
-  "triageNotes": "Patient diaphoretic. High MEWS score. Escalated immediately.",
-  "diagnosis": "Suspected STEMI",
-  "icd10Code": "I21.9",
-  "prescriptions": [
-    {
-      "drugName": "Aspirin",
-      "ndc": "00363-0088-01",
-      "dose": "325mg",
-      "route": "oral",
-      "frequency": "once"
-    }
-  ]
-}
-```
-
----
-
-## 🩺 Clinical Decision Support (CDS) Widgets
-
-Two embedded CDS tools mirror the advisory systems found in enterprise EHR platforms:
-
-### MEWS Score Calculator *(Nurse Dashboard)*
-The **Modified Early Warning Score** is auto-computed from entered vitals in real time. A score ≥ 5 triggers a red escalation banner: *"High MEWS Score detected — escalate to physician immediately."* This replicates Epic's Best Practice Advisory (BPA) alerting mechanism.
-
-### Drug-Drug Interaction Checker *(Doctor Dashboard)*
-When a second prescription is added, the system cross-references the new drug against the patient's documented `allergies` array and existing `prescriptions[]`. A warning badge is displayed if a known conflict is detected. Interaction data is stored in `db.json` under an `interactions` reference table — a simplified mock of the NLM RxNorm API used in production HIS environments.
-
----
-
 ## 👥 Team
 
-This system was designed and developed by a three-member engineering team as part of the **SBES240 — Requirements Engineering for Digital Health** course.
+This system was designed and developed by a three-member engineering team as part of the **SBES240 - Requirements Engineering for Digital Health** course.
 
-| Role | Name | Responsibilities |
-|---|---|---|
-| **Lead Architect & Logic Developer** | Abdelrahman Nagy Samir | System architecture, `db.json` schema design, `auth.js`, `router.js`, `api.js`, RBAC implementation, clinical workflow logic |
-| **UI/UX Engineer** | *(Team Member 2 — Name)* | All HTML pages, CSS architecture (`main.css`, `components.css`, `triage.css`), `ui-render.js`, responsive layout, triage & doctor UI forms |
-| **Feature Developer & Documentation Specialist** | *(Team Member 3 — Name)* | Dashboard feature logic (`admin.js`, `nurse.js`, `doctor.js`), CDS widgets, MEWS calculator, audit log system, technical report authorship |
-
----
-
-## 📄 Technical Report & Documentation
-
-This repository includes a full **Technical Requirements Report** documenting the complete software engineering lifecycle of the ERMS. The report is structured as follows:
-
-1. **Executive Summary** — Problem statement, solution scope, stakeholder identification
-2. **Requirements Analysis** — Functional Requirements (FR-01 through FR-XX) and Non-Functional Requirements (NFR-01 through NFR-XX)
-3. **System Design** — Data schema (ERD), file architecture, system context diagram
-4. **Workflow & Flowcharts** — Patient journey, authentication flow, triage decision tree
-5. **Clinical Interoperability Discussion** — HL7 FHIR alignment, ICD-10 and NDC standards rationale, reference to Ray Hammond's digital health integration framework
-6. **Design Rationale** — Architectural decisions (Vanilla JS, sessionStorage, modular CSS, single API gateway)
-7. **CDS Feature Documentation** — MEWS score logic, drug interaction checker design, comparison to Epic/Cerner advisory systems
-8. **Testing & Validation** — Role-based test cases, edge case handling (duplicate patients, unauthorized access, missing vitals)
-9. **Conclusion & Future Work** — Migration path to a real Node.js + PostgreSQL backend, WebSocket real-time updates, live HL7 FHIR API integration
-
-> 📁 The full report is available in the `/docs` directory of this repository.
+| Name 
+|---|
+| Abdelrahman Nagy Samir |
+| Omar Ehab |
+| Logine Fathy |
+| Malak Osama |
 
 ---
-
-## 🚀 Getting Started
-
-The ERMS requires no build tools, no package manager, and no compilation step. It runs entirely in the browser.
-
-**Prerequisites:** Any modern browser (Chrome 90+, Firefox 88+, Edge 90+). A local server is required for `fetch()` calls to `db.json` — the browser's same-origin policy blocks `file://` protocol requests.
-
-**Recommended local server options:**
-
-Using the VS Code **Live Server** extension (simplest):
-1. Open the project folder in VS Code
-2. Right-click `index.html` → *"Open with Live Server"*
-
-Using Python (no installation required):
-```bash
-# Python 3
-python -m http.server 5500
-
-# Python 2
-python -m SimpleHTTPServer 5500
-```
-
-Then open your browser at `http://localhost:5500`.
 
 **Pre-provisioned test accounts:**
 
@@ -347,16 +198,7 @@ Then open your browser at `http://localhost:5500`.
 | Admin | `admin` | `admin123` |
 | Doctor | `doctor` | `doc123` |
 | Nurse | `nurse` | `nurse123` |
-
----
-
-## 🙏 Acknowledgements
-
-- **HL7 International** — for the FHIR specification that informed our data architecture
-- **U.S. National Library of Medicine** — for the RxNorm and NDC drug coding standards referenced in the prescription module
-- **OpenFDA** — for the public drug database used to seed realistic NDC codes in `db.json`
-- **Epic Systems & Cerner** — whose published documentation and open developer portals provided design reference for the Clinical Decision Support widget architecture
-- **Ray Hammond** — whose foundational work on digital health integration and the elimination of clinical data silos directly motivated the system's core design philosophy
+| Patient | -- | `From db.json file` |
 
 ---
 
