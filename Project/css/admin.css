@@ -1,0 +1,250 @@
+
+
+
+
+
+/* ═══════════════════════════════════════════
+   SECTION HEADERS (All Accounts)
+   ═══════════════════════════════════════════ */
+.acct-section { margin-bottom: 32px; }
+
+.section-divider {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 18px; border-radius: 12px; margin-bottom: 16px;
+}
+.section-divider.pat  { background:#EFF6FF; border:1px solid #BFDBFE; }
+.section-divider.nur  { background:#F0FDFA; border:1px solid #99F6E4; }
+.section-divider.doc  { background:#F5F3FF; border:1px solid #DDD6FE; }
+.section-divider-icon {
+  width:38px; height:38px; border-radius:9px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:19px; color:#fff;
+}
+.pat .section-divider-icon { background:#2563EB; }
+.nur .section-divider-icon { background:#0D9488; }
+.doc .section-divider-icon { background:#7C3AED; }
+.section-divider-title {
+  font-family:'Plus Jakarta Sans',sans-serif; font-size:15px; font-weight:700; color:#0F172A;
+}
+.section-divider-sub  { font-size:12px; color:#64748B; margin-top:2px; }
+.section-divider-count {
+  margin-left:auto; font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:22px; font-weight:800; color:#0F172A; flex-shrink:0;
+}
+
+/* ═══════════════════════════════════════════
+   PATIENT CARDS (replaces table — no h-scroll)
+   ═══════════════════════════════════════════ */
+.pt-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 14px;
+}
+.pt-card {
+  background: #fff; border: 1px solid #E2E8F0; border-radius: 12px;
+  overflow: hidden; cursor: pointer; transition: transform .18s, box-shadow .18s;
+}
+.pt-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(15,23,42,.1); }
+.pt-card-top {
+  display:flex; align-items:center; gap:12px;
+  padding:14px 16px 11px; border-bottom:1px solid #F1F5F9;
+}
+.pt-card-avatar {
+  width:42px; height:42px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:800; color:#fff;
+}
+.pt-card-name { font-family:'Plus Jakarta Sans',sans-serif; font-size:13.5px; font-weight:700; color:#0F172A; }
+.pt-card-id   { font-size:11px; color:#94A3B8; margin-top:2px; }
+.pt-card-body { padding:11px 16px 14px; }
+.pt-card-row  { display:flex; align-items:flex-start; gap:7px; font-size:12.5px; color:#475569; margin-bottom:7px; }
+.pt-card-row:last-child { margin-bottom:0; }
+.pt-card-row i { font-size:14px; color:#94A3B8; flex-shrink:0; margin-top:1px; width:16px; }
+.pt-card-foot {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:9px 16px; background:#F8FAFC; border-top:1px solid #F1F5F9;
+  font-size:11.5px; color:#94A3B8; gap:8px; flex-wrap:wrap;
+}
+
+/* ═══════════════════════════════════════════
+   STAFF PROFILE CARDS
+   ═══════════════════════════════════════════ */
+.staff-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.staff-card {
+  background:#fff; border:1px solid #E2E8F0; border-radius:13px;
+  overflow:hidden; transition:transform .18s, box-shadow .18s;
+}
+.staff-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(15,23,42,.1); }
+.staff-card-bar { height:4px; }
+.nurse-bar  { background:linear-gradient(90deg,#0D9488,#2DD4BF); }
+.doctor-bar { background:linear-gradient(90deg,#7C3AED,#A78BFA); }
+.staff-card-top {
+  display:flex; align-items:center; gap:12px;
+  padding:16px 18px 12px; border-bottom:1px solid #F1F5F9;
+}
+.staff-card-avatar {
+  width:48px; height:48px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:800; color:#fff;
+}
+.nurse-av  { background:linear-gradient(135deg,#0D9488,#14B8A6); }
+.doctor-av { background:linear-gradient(135deg,#7C3AED,#8B5CF6); }
+.staff-name { font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:700; color:#0F172A; }
+.staff-user { font-size:11px; color:#94A3B8; font-family:monospace; margin-top:2px; }
+.staff-card-body { padding:12px 18px; }
+.staff-row { display:flex; align-items:center; gap:7px; font-size:12.5px; color:#475569; margin-bottom:7px; }
+.staff-row i { font-size:14px; color:#94A3B8; width:17px; flex-shrink:0; }
+.staff-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid #F1F5F9; }
+.staff-stat { text-align:center; }
+.staff-stat-val { font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; color:#0F172A; }
+.staff-stat-lbl { font-size:10px; color:#94A3B8; text-transform:uppercase; letter-spacing:.05em; margin-top:1px; }
+
+/* ═══════════════════════════════════════════
+   CREATE STAFF PANEL
+   ═══════════════════════════════════════════ */
+.create-staff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.role-selector {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 4px;
+}
+.role-opt {
+  border: 2px solid #E2E8F0; border-radius: 10px;
+  padding: 12px; text-align: center; cursor: pointer;
+  transition: all .18s ease; background: #fff;
+}
+.role-opt:hover { border-color:#93C5FD; background:#F0F9FF; }
+.role-opt.sel-nurse  { border-color:#0D9488; background:#F0FDFA; }
+.role-opt.sel-doctor { border-color:#7C3AED; background:#F5F3FF; }
+.role-opt i { font-size:24px; display:block; margin-bottom:5px; }
+.role-opt.sel-nurse  i { color:#0D9488; }
+.role-opt.sel-doctor i { color:#7C3AED; }
+.role-opt-label { font-size:12px; font-weight:600; color:#475569; }
+.role-opt.sel-nurse  .role-opt-label { color:#0D9488; }
+.role-opt.sel-doctor .role-opt-label { color:#7C3AED; }
+
+/* Toast */
+.toast-msg {
+  position:fixed; bottom:24px; right:24px; z-index:999;
+  display:flex; align-items:center; gap:10px;
+  padding:12px 18px; border-radius:12px; font-size:13px; font-weight:500;
+  background:#0F172A; color:#fff; box-shadow:0 8px 30px rgba(0,0,0,.2);
+  transform:translateY(20px) scale(.95); opacity:0;
+  transition:all .3s cubic-bezier(.4,0,.2,1); pointer-events:none;
+}
+.toast-msg.show { transform:translateY(0) scale(1); opacity:1; }
+.toast-msg i { color:#4ADE80; font-size:16px; }
+.toast-msg.err i { color:#F87171; }
+
+/* Quick-nav pills */
+.acct-nav { display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+.acct-nav-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 16px; border-radius:99px; font-size:12.5px; font-weight:600;
+  border:1.5px solid transparent; cursor:pointer; transition:.15s ease; text-decoration:none;
+}
+.pill-pat    { background:#EFF6FF; color:#1D4ED8; border-color:#BFDBFE; }
+.pill-pat:hover  { background:#DBEAFE; }
+.pill-nur    { background:#F0FDFA; color:#0F766E; border-color:#99F6E4; }
+.pill-nur:hover  { background:#CCFBF1; }
+.pill-doc    { background:#F5F3FF; color:#5B21B6; border-color:#DDD6FE; }
+.pill-doc:hover  { background:#EDE9FE; }
+.pill-ct { min-width:20px; height:20px; padding:0 5px; border-radius:99px; font-size:10px; font-weight:700; background:rgba(0,0,0,.08); display:inline-flex; align-items:center; justify-content:center; }
+
+/* Responsive */
+@media(max-width:900px){
+  .create-staff-grid { grid-template-columns:1fr; }
+}
+@media(max-width:600px){
+  .pt-card-grid   { grid-template-columns:1fr; }
+  .staff-card-grid{ grid-template-columns:1fr; }
+  .acct-nav-pill span.pill-label { display:none; }
+}
+
+
+  /* HORIZONTAL SCROLL FIX */
+  /* Prevent any child element from pushing the page wider than the viewport */
+html, body { overflow-x: hidden; max-width: 100%; }
+
+.shell { overflow-x: hidden; }
+
+.panel { max-width: 100%; overflow-x: hidden; }
+
+/* The main content area must not exceed viewport minus sidebar */
+.main {
+  width: calc(100% - var(--sidebar-w, 220px)) !important;
+  max-width: calc(100vw - var(--sidebar-w, 220px)) !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* On mobile sidebar is hidden, so full width */
+@media (max-width: 768px) {
+  .main {
+    width: 100% !important;
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+  }
+}
+
+/* All cards, grids, and layout containers must stay within their parent */
+.card, .stats-grid, .grid-2, .grid-3, .grid-3-2,
+.staff-card-grid, .pt-card-grid, .pt-rec-grid, .create-staff-grid,
+.acct-section, .acct-tabs, .acct-nav,
+.section-divider, .about-main-card, .features-grid,
+.doctors-grid, .reviews-grid, .contact-wrapper, .faq-list {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tables scroll inside their wrapper — never push the page */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table { min-width: 0; width: 100%; }
+
+/* Ensure no inline-width element overflows */
+[style*="min-width:"] { max-width: 100%; }
+
+
+
+
+
+
+/* ADMIN-SPECIFIC OVERFLOW FIXES */
+
+/* Create Staff & Create Patient 2-col grid collapses before it overflows */
+.create-staff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 100%;
+}
+@media (max-width: 960px) {
+  .create-staff-grid { grid-template-columns: 1fr; }
+}
+
+/* Patient accounts table inside manage panel */
+#ptAccountsList table { min-width: 0 !important; width: 100%; }
+
+/* All inline-styled grids inside panels stay contained */
+.panel [style*="grid-template-columns"] {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Role selector two-column stays within card */
+.role-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-width: 100%;
+}

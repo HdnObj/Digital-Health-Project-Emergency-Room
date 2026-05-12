@@ -1,0 +1,67 @@
+
+
+/* HORIZONTAL SCROLL FIX */
+/* Prevent any child element from pushing the page wider than the viewport */
+html, body { overflow-x: hidden; max-width: 100%; }
+
+.shell { overflow-x: hidden; }
+
+.panel { max-width: 100%; overflow-x: hidden; }
+
+/* The main content area must not exceed viewport minus sidebar */
+.main {
+  width: calc(100% - var(--sidebar-w, 220px)) !important;
+  max-width: calc(100vw - var(--sidebar-w, 220px)) !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* On mobile sidebar is hidden, so full width */
+@media (max-width: 768px) {
+  .main {
+    width: 100% !important;
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+  }
+}
+
+/* All cards, grids, and layout containers must stay within their parent */
+.card, .stats-grid, .grid-2, .grid-3, .grid-3-2,
+.staff-card-grid, .pt-card-grid, .pt-rec-grid, .create-staff-grid,
+.acct-section, .acct-tabs, .acct-nav,
+.section-divider, .about-main-card, .features-grid,
+.doctors-grid, .reviews-grid, .contact-wrapper, .faq-list {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tables scroll inside their wrapper — never push the page */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table { min-width: 0; width: 100%; }
+
+/* Ensure no inline-width element overflows */
+[style*="min-width:"] { max-width: 100%; }
+
+
+
+/* DOCTOR-SPECIFIC OVERFLOW FIXES */
+
+/* Patient cards grid */
+#patientCards {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+  max-width: 100% !important;
+}
+@media (max-width: 600px) {
+  #patientCards { grid-template-columns: 1fr !important; }
+}
+
+/* Clinical view inline prescription list */
+#prescriptionList > div { max-width: 100%; box-sizing: border-box; flex-wrap: wrap; }
+
+/* Drug autocomplete dropdown stays inside its container */
+.autocomplete-dropdown { max-width: 100%; }

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERMS - Nurse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/nurse.css">
+
+
+<!-- <style>
+/* ── HORIZONTAL SCROLL FIX ── */
+/* Prevent any child element from pushing the page wider than the viewport */
+html, body { overflow-x: hidden; max-width: 100%; }
+
+.shell { overflow-x: hidden; }
+
+.panel { max-width: 100%; overflow-x: hidden; }
+
+/* The main content area must not exceed viewport minus sidebar */
+.main {
+  width: calc(100% - var(--sidebar-w, 220px)) !important;
+  max-width: calc(100vw - var(--sidebar-w, 220px)) !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* On mobile sidebar is hidden, so full width */
+@media (max-width: 768px) {
+  .main {
+    width: 100% !important;
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+  }
+}
+
+/* All cards, grids, and layout containers must stay within their parent */
+.card, .stats-grid, .grid-2, .grid-3, .grid-3-2,
+.staff-card-grid, .pt-card-grid, .pt-rec-grid, .create-staff-grid,
+.acct-section, .acct-tabs, .acct-nav,
+.section-divider, .about-main-card, .features-grid,
+.doctors-grid, .reviews-grid, .contact-wrapper, .faq-list {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tables scroll inside their wrapper — never push the page */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table { min-width: 0; width: 100%; }
+
+/* Ensure no inline-width element overflows */
+[style*="min-width:"] { max-width: 100%; }
+</style> -->
+
+<!-- <style>
+/* ── NURSE-SPECIFIC OVERFLOW FIXES ── */
+
+/* Add Patient form max-width stays within panel */
+.add-pt-form-card { max-width: 100% !important; box-sizing: border-box; }
+
+/* Vitals grid in triage form */
+.vitals-grid { max-width: 100%; }
+
+/* Patient record cards grid collapses cleanly */
+.pt-rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  max-width: 100%;
+}
+@media (max-width: 600px) {
+  .pt-rec-grid { grid-template-columns: 1fr; }
+}
+
+/* Records toolbar wraps instead of overflowing */
+.records-toolbar { flex-wrap: wrap; }
+.records-search input { min-width: 0; width: 100%; }
+</style> -->
+
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="shell">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="ti ti-activity-heartbeat" style="color:#fff;font-size:16px"></i></div>
+      <div><div class="sidebar-logo-text">ERMS</div><div class="sidebar-logo-sub">Nurse Portal</div></div>
+    </div>
+    <div class="sidebar-section">Triage</div>
+    <a class="sidebar-link active" onclick="showPanel('queue')" href="#"><i class="ti ti-list"></i> Patient Queue <span class="badge-count" id="waitingCount">—</span></a>
+    <a class="sidebar-link" onclick="showPanel('triage')" href="#"><i class="ti ti-stethoscope"></i> Triage Form</a>
+    <div class="sidebar-section">Records</div>
+    <a class="sidebar-link" onclick="showPanel('completed')" href="#"><i class="ti ti-clipboard-check"></i> Completed Triages</a>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">SK</div>
+        <div><div class="sidebar-user-name" id="sidebarName">Sara Khalil</div><div class="sidebar-user-role">Nurse</div></div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()"><i class="ti ti-logout"></i> Sign Out</button>
+    </div>
+  </aside>
+
+  <div style="flex:1;min-width:0;overflow-x:hidden">
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu"><i class="ti ti-menu-2"></i></button>
+      <div class="topbar-left">
+        <div class="topbar-title-wrap">
+          <div class="topbar-title" id="panelTitle">Patient Queue</div>
+          <div class="topbar-sub" id="panelSub">Patients awaiting triage</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn hide-mobile"><i class="ti ti-bell"></i></button>
+        <div class="topbar-avatar" id="topbarAvatar">SK</div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-clock" style="color:#F59E0B"></i> Awaiting Triage</div><div class="stat-value" id="st-waiting">—</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-activity-heartbeat" style="color:#EF4444"></i> In Triage</div><div class="stat-value" id="st-intriage">—</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-clipboard-check" style="color:#22C55E"></i> Completed Today</div><div class="stat-value" id="st-done">—</div></div>
+      </div>
+
+      <!-- Queue panel -->
+      <div class="panel active" id="panel-queue">
+        <div id="cdsQueueAlert"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">Awaiting Triage</div><div class="card-subtitle">Click Start Triage to assess</div></div></div>
+            <div id="awaitingList"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">Already Triaged</div><div class="card-subtitle">Patients with recorded vitals</div></div></div>
+            <div id="triagedList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Triage form panel -->
+      <div class="panel" id="panel-triage">
+        <div id="cdsTriageAlert"></div>
+        <div class="grid-3-2">
+          <div class="card">
+            <div class="card-header">
+              <div><div class="card-title" id="triagePatientName">Select a patient to triage</div><div class="card-subtitle" id="triagePatientMeta">Choose from the queue</div></div>
+              <div id="triagePriorityBadge"></div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Patient</label>
+                <select class="form-input" id="triagePatientSelect" onchange="selectPatient()">
+                  <option value="">— Select patient —</option>
+                </select>
+              </div>
+              <hr class="divider">
+              <div class="vitals-grid" style="margin-bottom:16px">
+                <div class="vital-box"><div class="vital-label">Blood Pressure</div><input type="text" class="form-input" id="vBP" placeholder="120/80" style="text-align:center;font-weight:600;margin:6px 0" oninput="autoCalcPriority()"><div class="vital-unit">mmHg</div></div>
+                <div class="vital-box"><div class="vital-label">Heart Rate</div><input type="number" class="form-input" id="vHR" placeholder="72" style="text-align:center;font-weight:600;margin:6px 0" oninput="autoCalcPriority()"><div class="vital-unit">bpm</div></div>
+                <div class="vital-box"><div class="vital-label">SpO₂</div><input type="number" class="form-input" id="vSpO2" placeholder="98" style="text-align:center;font-weight:600;margin:6px 0" oninput="autoCalcPriority()"><div class="vital-unit">%</div></div>
+                <div class="vital-box"><div class="vital-label">Temperature</div><input type="number" step="0.1" class="form-input" id="vTemp" placeholder="36.8" style="text-align:center;font-weight:600;margin:6px 0" oninput="autoCalcPriority()"><div class="vital-unit">°C</div></div>
+                <div class="vital-box" style="grid-column:span 2">
+                  <div class="vital-label">Pain Scale (0–10)</div>
+                  <input type="range" min="0" max="10" value="5" id="vPain" style="width:100%;margin:8px 0" oninput="document.getElementById('painVal').textContent=this.value;autoCalcPriority()">
+                  <div class="vital-unit">Score: <span id="painVal">5</span>/10</div>
+                </div>
+              </div>
+
+              <label class="form-label">ESI Priority Level</label>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
+                <div class="priority-card" id="pcard-P1" onclick="selectPriority('P1-Red')"><div style="font-size:22px;margin-bottom:4px">🔴</div><div style="font-size:12px;font-weight:700;color:#B91C1C">P1 Critical</div><div style="font-size:10px;color:#94A3B8;margin-top:2px">Life threat</div></div>
+                <div class="priority-card" id="pcard-P2" onclick="selectPriority('P2-Yellow')"><div style="font-size:22px;margin-bottom:4px">🟡</div><div style="font-size:12px;font-weight:700;color:#B45309">P2 Urgent</div><div style="font-size:10px;color:#94A3B8;margin-top:2px">High risk</div></div>
+                <div class="priority-card" id="pcard-P3" onclick="selectPriority('P3-Green')"><div style="font-size:22px;margin-bottom:4px">🟢</div><div style="font-size:12px;font-weight:700;color:#15803D">P3 Non-Urgent</div><div style="font-size:10px;color:#94A3B8;margin-top:2px">Less urgent</div></div>
+              </div>
+
+              <button class="btn btn-primary" style="width:100%" onclick="submitTriage()"><i class="ti ti-clipboard-check"></i> Submit Triage Record</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-header"><div class="card-title">Patient Information</div></div>
+              <div class="card-body" id="patientInfoCard"><div style="text-align:center;padding:20px;color:#94A3B8;font-size:13px"><i class="ti ti-user" style="font-size:32px;display:block;margin-bottom:8px"></i>Select a patient</div></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">CDS Guidelines</div></div>
+              <div class="card-body">
+                <div class="timeline">
+                  <div class="timeline-item"><div class="timeline-dot"><i class="ti ti-heart-rate-monitor" style="font-size:13px"></i></div><div class="timeline-text"><strong>HR &gt; 120 bpm</strong> → Auto-flag P1</div></div>
+                  <div class="timeline-item"><div class="timeline-dot"><i class="ti ti-lungs" style="font-size:13px"></i></div><div class="timeline-text"><strong>SpO₂ &lt; 90%</strong> → Auto-flag P1</div></div>
+                  <div class="timeline-item"><div class="timeline-dot"><i class="ti ti-thermometer" style="font-size:13px"></i></div><div class="timeline-text"><strong>Temp &gt; 39°C</strong> → Suggest P2</div></div>
+                  <div class="timeline-item"><div class="timeline-dot"><i class="ti ti-gauge" style="font-size:13px"></i></div><div class="timeline-text"><strong>Systolic &gt; 160</strong> → Consider P2</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed panel -->
+      <div class="panel" id="panel-completed">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Completed Triages</div></div>
+          <div class="table-wrap"><table><thead><tr><th>Patient</th><th>BP</th><th>HR</th><th>SpO₂</th><th>Temp</th><th>Pain</th><th>Priority</th><th>Time</th></tr></thead><tbody id="completedTable"></tbody></table></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/nurse.js"></script>
+
+<!-- <script>
+let db=null, currentUser=null, selectedPriority=null;
+
+function init() {
+  currentUser=requireAuth('nurse');
+  if(!currentUser) return;
+  document.getElementById('sidebarAvatar').textContent=currentUser.avatar;
+  document.getElementById('sidebarName').textContent=currentUser.name;
+  document.getElementById('topbarAvatar').textContent=currentUser.avatar;
+  db=loadDB(); renderAll();
+}
+
+function renderAll(){ renderStats(); renderQueues(); renderPatientSelect(); renderCompletedTable(); }
+
+function renderStats() {
+  const waiting=db.patients.filter(p=>p.status==='waiting').length;
+  const inT=db.patients.filter(p=>p.status==='in-triage').length;
+  const done=db.vitals.filter(v=>v.recordedBy===currentUser.id).length;
+  document.getElementById('st-waiting').textContent=waiting;
+  document.getElementById('st-intriage').textContent=inT;
+  document.getElementById('st-done').textContent=done;
+  document.getElementById('waitingCount').textContent=waiting+inT;
+}
+
+function renderQueues() {
+  const row=(p,showBtn)=>{
+    const[bg,fc]=avatarColor(p.name);
+    const init=p.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+    const v=db.vitals.find(x=>x.patientId===p.id);
+    return `<div class="patient-row"><div class="patient-avatar" style="background:${bg};color:${fc}">${init}</div><div style="flex:1;min-width:0"><div class="patient-name">${p.name}</div><div class="patient-meta">${p.chiefComplaint} · ${timeAgo(p.arrivedAt)}</div></div>${v?priorityBadge(v.priority):showBtn?`<button class="btn btn-sm btn-primary" onclick="startTriage('${p.id}')">Start Triage</button>`:statusBadge(p.status)}</div>`;
+  };
+  const awaiting=db.patients.filter(p=>p.status==='waiting');
+  const triaged=db.patients.filter(p=>p.status==='in-triage'||p.status==='under-treatment');
+  document.getElementById('awaitingList').innerHTML=awaiting.map(p=>row(p,true)).join('')||'<div style="padding:20px;text-align:center;color:#94A3B8;font-size:13px"><i class="ti ti-check" style="display:block;font-size:28px;margin-bottom:8px"></i>No patients waiting</div>';
+  document.getElementById('triagedList').innerHTML=triaged.map(p=>row(p,false)).join('')||'<div style="padding:20px;text-align:center;color:#94A3B8;font-size:13px">No triaged patients yet</div>';
+  const critV=db.vitals.filter(v=>v.hr>120||v.spo2<90).length;
+  document.getElementById('cdsQueueAlert').innerHTML=critV>0?`<div class="cds-alert"><i class="ti ti-alert-triangle"></i><strong>${critV} patient(s)</strong> with critical vitals — HR&gt;120 or SpO₂&lt;90.</div>`:'';
+}
+
+function renderPatientSelect() {
+  const eligible=db.patients.filter(p=>p.status==='waiting'||p.status==='in-triage');
+  document.getElementById('triagePatientSelect').innerHTML='<option value="">— Select patient —</option>'+eligible.map(p=>`<option value="${p.id}">${p.name} — ${p.chiefComplaint}</option>`).join('');
+}
+
+function startTriage(id){ showPanel('triage'); document.getElementById('triagePatientSelect').value=id; selectPatient(); }
+
+function selectPatient() {
+  const id=document.getElementById('triagePatientSelect').value;
+  if(!id){ document.getElementById('patientInfoCard').innerHTML='<div style="text-align:center;padding:20px;color:#94A3B8;font-size:13px">Select a patient</div>'; return; }
+  const p=db.patients.find(x=>x.id===id);
+  const[bg,fc]=avatarColor(p.name);
+  const age=new Date().getFullYear()-new Date(p.dob).getFullYear();
+  document.getElementById('triagePatientName').textContent=p.name;
+  document.getElementById('triagePatientMeta').textContent=`${age} yrs · ${p.gender} · ${p.chiefComplaint}`;
+  document.getElementById('patientInfoCard').innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:48px;height:48px;border-radius:50%;background:${bg};color:${fc};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">${p.name.split(' ').map(n=>n[0]).join('').slice(0,2)}</div><div><div style="font-weight:600;font-size:14px">${p.name}</div><div style="font-size:12px;color:#64748B">${p.nationalId}</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px"><div><span style="color:#94A3B8">DOB</span><br><strong>${p.dob}</strong></div><div><span style="color:#94A3B8">Gender</span><br><strong>${p.gender}</strong></div><div style="grid-column:span 2"><span style="color:#94A3B8">Complaint</span><br><strong>${p.chiefComplaint}</strong></div><div><span style="color:#94A3B8">Arrived</span><br><strong>${timeAgo(p.arrivedAt)}</strong></div></div>`;
+}
+
+function selectPriority(p){
+  selectedPriority=p;
+  ['P1','P2','P3'].forEach(x=>{ document.getElementById('pcard-'+x).className='priority-card'; });
+  document.getElementById('pcard-'+p.split('-')[0]).className='priority-card selected-'+p.split('-')[0];
+  document.getElementById('triagePriorityBadge').innerHTML=priorityBadge(p);
+}
+
+function autoCalcPriority(){
+  const hr=parseInt(document.getElementById('vHR').value)||0;
+  const spo2=parseInt(document.getElementById('vSpO2').value)||100;
+  const temp=parseFloat(document.getElementById('vTemp').value)||36.5;
+  const pain=parseInt(document.getElementById('vPain').value)||0;
+  const sys=parseInt((document.getElementById('vBP').value||'0').split('/')[0])||0;
+  let suggested=null, msg='';
+  if(hr>120||spo2<90){ suggested='P1-Red'; msg=`<strong>Auto P1:</strong> ${hr>120?'HR='+hr+' bpm':''} ${spo2<90?'SpO₂='+spo2+'%':''}`; }
+  else if(temp>39||sys>160||pain>=8){ suggested='P2-Yellow'; msg=`<strong>Suggested P2:</strong> ${temp>39?'Temp='+temp+'°C':''} ${sys>160?'SBP='+sys:''} ${pain>=8?'Pain='+pain+'/10':''}`; }
+  document.getElementById('cdsTriageAlert').innerHTML=msg?`<div class="${suggested==='P1-Red'?'cds-alert':'alert alert-warning'}" style="margin-bottom:16px"><i class="ti ti-alert-triangle"></i>${msg.trim()}</div>`:'';
+  if(suggested) selectPriority(suggested);
+}
+
+function submitTriage(){
+  const patId=document.getElementById('triagePatientSelect').value;
+  const bp=document.getElementById('vBP').value, hr=document.getElementById('vHR').value;
+  const spo2=document.getElementById('vSpO2').value, temp=document.getElementById('vTemp').value;
+  const pain=document.getElementById('vPain').value;
+  if(!patId||!bp||!hr||!spo2||!temp){ alert('Please fill all vital signs.'); return; }
+  if(!selectedPriority){ alert('Please select a priority level.'); return; }
+  const existing=db.vitals.findIndex(v=>v.patientId===patId);
+  const entry={id:'v'+Date.now(),patientId:patId,recordedBy:currentUser.id,timestamp:new Date().toISOString(),bp,hr:parseInt(hr),spo2:parseInt(spo2),temp:parseFloat(temp),painScale:parseInt(pain),priority:selectedPriority};
+  if(existing>=0) db.vitals[existing]=entry; else db.vitals.push(entry);
+  const p=db.patients.find(x=>x.id===patId);
+  p.status='in-triage'; p.triageNurseId=currentUser.id;
+  addAuditLog('TRIAGE_COMPLETED',p.name);
+  saveDB(db); db=loadDB(); renderAll(); showPanel('queue');
+  alert('Triage recorded for '+p.name);
+}
+
+function renderCompletedTable(){
+  const rows=db.vitals.filter(v=>v.recordedBy===currentUser.id).map(v=>{
+    const p=db.patients.find(x=>x.id===v.patientId);
+    return `<tr><td class="name">${p?.name||'?'}</td><td>${v.bp}</td><td>${v.hr}</td><td>${v.spo2}%</td><td>${v.temp}°C</td><td>${v.painScale}/10</td><td>${priorityBadge(v.priority)}</td><td style="font-size:12px;white-space:nowrap">${timeAgo(v.timestamp)}</td></tr>`;
+  }).join('');
+  document.getElementById('completedTable').innerHTML=rows||'<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:20px">No completed triages</td></tr>';
+}
+
+const PM={queue:['Patient Queue','Patients awaiting triage'],triage:['Triage Assessment','Record vitals and assign ESI priority'],completed:['Completed Triages','Your triage records']};
+function showPanel(id){
+
+  if(window.innerWidth<=768) closeSidebar();
+
+
+
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+
+  const targetPanel = document.getElementById('panel-' + id);
+  if (targetPanel) {
+    targetPanel.classList.add('active');
+  }
+
+  const activeLink = document.querySelector(`.sidebar-link[onclick*="showPanel('${id}')"]`);
+  if (activeLink) {
+    activeLink.classList.add('active');
+  }
+
+
+
+  const[t,s]=PM[id]||['Panel',''];
+  document.getElementById('panelTitle').textContent=t;
+  document.getElementById('panelSub').textContent=s;
+
+}
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); document.body.style.overflow=document.getElementById('sidebar').classList.contains('open')?'hidden':''; }
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); document.body.style.overflow=''; }
+
+init();
+</script> -->
+
+</body>
+</html>

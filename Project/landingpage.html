@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>City General Hospital</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/landingpage.css">
+
+<!-- <style>
+/* ============================================
+   DESIGN TOKENS — DAYLIGHT MODE
+   ============================================ */
+:root {
+  /* Brand blues */
+  --blue:          #2563EB;
+  --blue-dark:     #1D4ED8;
+  --blue-mid:      #3B82F6;
+  --blue-light:    #DBEAFE;
+  --blue-xlight:   #EFF6FF;
+
+  /* Accent palette */
+  --teal:          #0D9488;
+  --teal-light:    #CCFBF1;
+  --red:           #DC2626;
+  --red-light:     #FEE2E2;
+  --green:         #16A34A;
+  --green-light:   #DCFCE7;
+  --yellow:        #D97706;
+  --yellow-light:  #FEF3C7;
+  --purple:        #7C3AED;
+  --purple-light:  #EDE9FE;
+  --orange:        #EA580C;
+  --orange-light:  #FFEDD5;
+
+  /* Surfaces */
+  --bg:            #F0F6FF;
+  --bg-alt:        #EEF4FF;
+  --surface:       #FFFFFF;
+  --surface-raised:#F8FAFF;
+
+  /* Text */
+  --text-primary:  #0F172A;
+  --text-body:     #1E293B;
+  --text-secondary:#334155;
+  --text-muted:    #64748B;
+  --text-subtle:   #94A3B8;
+
+  /* Borders & shadows */
+  --border:        #CBD5E1;
+  --border-soft:   #E2E8F0;
+  --border-xsoft:  #F1F5F9;
+  --shadow-xs:     0 1px 3px rgba(15,23,42,.06);
+  --shadow-sm:     0 2px 8px rgba(15,23,42,.08);
+  --shadow-md:     0 6px 24px rgba(15,23,42,.1);
+  --shadow-lg:     0 16px 56px rgba(15,23,42,.12);
+
+  /* Radii */
+  --r-xl:  28px;
+  --r-lg:  20px;
+  --r-md:  14px;
+  --r-sm:  9px;
+  --r-xs:  6px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; font-size:16px; }
+body {
+  font-family: 'Manrope', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Soft daylight ambient glow — barely visible tints */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 900px 700px at 10% 10%,  rgba(37,99,235,.05)  0%, transparent 60%),
+    radial-gradient(ellipse 600px 600px at 90% 5%,   rgba(124,58,237,.04) 0%, transparent 55%),
+    radial-gradient(ellipse 700px 600px at 80% 90%,  rgba(13,148,136,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 500px 500px at 5%  90%,  rgba(37,99,235,.03)  0%, transparent 55%);
+}
+section, nav, header, footer { position: relative; z-index: 1; }
+
+/* ============================================
+   NAV
+   ============================================ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 52px;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-soft);
+  box-shadow: 0 1px 16px rgba(15,23,42,.07);
+  transition: padding .3s, box-shadow .3s;
+}
+nav.scrolled {
+  padding: 11px 52px;
+  background: rgba(255,255,255,.98);
+  box-shadow: 0 2px 20px rgba(15,23,42,.1);
+}
+
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.05rem;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.nav-brand-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+  box-shadow: 0 3px 10px rgba(37,99,235,.3);
+}
+.nav-brand-name { color: var(--text-primary); letter-spacing: -.01em; }
+.nav-brand-name span { color: var(--blue); }
+
+.nav-links {
+  display: flex; gap: 3px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+  border-radius: 50px; padding: 5px 7px;
+  box-shadow: var(--shadow-xs);
+}
+.nav-links a {
+  text-decoration: none; color: var(--text-muted);
+  font-size: .875rem; font-weight: 500;
+  padding: 7px 17px; border-radius: 50px;
+  transition: all .18s;
+}
+.nav-links a.active, .nav-links a:hover {
+  background: var(--surface);
+  color: var(--blue);
+  font-weight: 600;
+  box-shadow: 0 1px 6px rgba(37,99,235,.12);
+}
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-login {
+  color: var(--text-secondary); font-size: .875rem; font-weight: 500;
+  text-decoration: none; padding: 8px 16px; border-radius: 50px;
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+  transition: all .18s;
+}
+.nav-login:hover {
+  background: var(--blue-xlight);
+  color: var(--blue);
+  border-color: var(--blue-mid);
+}
+.nav-cta-btn {
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+  color: #fff; font-family: 'Manrope', sans-serif; font-weight: 600;
+  font-size: .875rem; padding: 9px 22px; border-radius: 50px;
+  border: none; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(37,99,235,.35);
+  display: flex; align-items: center; gap: 7px; transition: all .18s;
+}
+.nav-cta-btn:hover { transform: translateY(-1px); box-shadow: 0 7px 24px rgba(37,99,235,.5); }
+
+.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+.hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--text-primary); margin: 5px 0; border-radius: 2px; transition: all .3s;
+}
+
+@media(max-width:768px){
+  nav { padding: 14px 20px; }
+  nav.scrolled { padding: 11px 20px; }
+  .nav-links {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; border-radius: 0; padding: 10px;
+    background: rgba(255,255,255,.99); border: none;
+    border-bottom: 1px solid var(--border-soft);
+    box-shadow: 0 12px 32px rgba(15,23,42,.1);
+  }
+  .nav-links.open { display: flex; }
+  .nav-login { display: none; }
+  .hamburger { display: block; }
+}
+
+/* ============================================
+   HERO
+   ============================================ */
+#home {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 130px 52px 80px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+
+/* Subtle dot grid decorations */
+.dot-pattern {
+  position: absolute; right: 10%; top: 14%;
+  width: 200px; height: 180px; opacity: .18;
+  background-image: radial-gradient(circle, rgba(37,99,235,.5) 1.5px, transparent 1.5px);
+  background-size: 18px 18px; pointer-events: none;
+}
+.dot-pattern2 {
+  position: absolute; left: 6%; bottom: 12%;
+  width: 160px; height: 140px; opacity: .12;
+  background-image: radial-gradient(circle, rgba(37,99,235,.5) 1.5px, transparent 1.5px);
+  background-size: 18px 18px; pointer-events: none;
+}
+
+.hero-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--blue-xlight);
+  border: 1.5px solid rgba(37,99,235,.2);
+  border-radius: 50px; padding: 6px 18px;
+  font-size: .8rem; font-weight: 700; color: var(--blue);
+  margin-bottom: 28px; letter-spacing: .04em;
+}
+.hero-chip-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px var(--green-light);
+  animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.hero-h1 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900; font-size: clamp(2.6rem, 7vw, 5rem);
+  line-height: 1.06; color: var(--text-primary);
+  margin-bottom: 20px; letter-spacing: -.02em;
+}
+.hero-h1 .accent  { color: var(--blue); }
+.hero-h1 .accent2 { color: var(--green); }
+
+.hero-sub {
+  font-size: clamp(.95rem, 2vw, 1.1rem);
+  color: var(--text-muted);
+  max-width: 560px; margin: 0 auto 40px;
+  line-height: 1.75;
+}
+
+.hero-btns {
+  display: flex; gap: 14px; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 64px;
+}
+.btn-hero-primary {
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+  color: #fff; font-family: 'Manrope', sans-serif; font-weight: 700;
+  font-size: .95rem; padding: 14px 32px; border-radius: 50px;
+  border: none; cursor: pointer; text-decoration: none;
+  box-shadow: 0 6px 24px rgba(37,99,235,.4);
+  display: flex; align-items: center; gap: 8px; transition: all .22s;
+}
+.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(37,99,235,.55); }
+
+.btn-hero-outline {
+  color: var(--text-body); font-family: 'Manrope', sans-serif; font-weight: 600;
+  font-size: .95rem; padding: 14px 30px; border-radius: 50px;
+  border: 1.5px solid var(--border); cursor: pointer;
+  background: var(--surface); text-decoration: none;
+  display: flex; align-items: center; gap: 8px; transition: all .22s;
+  box-shadow: var(--shadow-sm);
+}
+.btn-hero-outline:hover {
+  background: var(--blue-xlight);
+  border-color: var(--blue-mid);
+  color: var(--blue);
+  transform: translateY(-2px);
+}
+
+/* Stats bar */
+.hero-stats {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: 22px; padding: 28px 40px;
+  max-width: 780px; margin: 0 auto;
+  box-shadow: var(--shadow-md);
+}
+.hero-stat {
+  flex: 1; min-width: 140px;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0 24px; position: relative;
+}
+.hero-stat + .hero-stat::before {
+  content: ''; position: absolute; left: 0; top: 10%; bottom: 10%;
+  width: 1px; background: var(--border-soft);
+}
+.hero-stat-num {
+  font-family: 'Outfit', sans-serif; font-weight: 900;
+  font-size: 2.2rem; line-height: 1;
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-stat-lbl {
+  font-size: .75rem; color: var(--text-muted); margin-top: 5px; font-weight: 500;
+}
+
+/* Scroll hint */
+.scroll-hint {
+  position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 5px; opacity: .45;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.scroll-hint span { font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
+.scroll-line {
+  width: 1px; height: 38px;
+  background: linear-gradient(to bottom, var(--blue), transparent);
+  animation: scrollPulse 2s infinite;
+}
+@keyframes scrollPulse { 0%,100%{opacity:.3} 50%{opacity:.9} }
+
+/* ============================================
+   SHARED SECTION STYLES
+   ============================================ */
+.section-eyebrow {
+  font-size: .74rem; font-weight: 700; color: var(--blue);
+  letter-spacing: .16em; text-transform: uppercase;
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.section-eyebrow::before {
+  content: ''; width: 20px; height: 2px;
+  background: var(--blue); border-radius: 2px;
+}
+.section-heading {
+  font-family: 'Outfit', sans-serif; font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  color: var(--text-primary); line-height: 1.15; margin-bottom: 14px;
+}
+.section-body {
+  color: var(--text-muted); font-size: .97rem;
+  line-height: 1.75; max-width: 520px;
+}
+
+/* ============================================
+   ABOUT SECTION
+   ============================================ */
+#about {
+  padding: 110px 52px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 64px; align-items: center;
+  max-width: 1200px; margin: 0 auto;
+}
+
+.about-visual { position: relative; }
+
+.about-main-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-xl); padding: 32px;
+  box-shadow: var(--shadow-lg);
+}
+.about-card-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.about-logo {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+  display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+  box-shadow: 0 4px 12px rgba(37,99,235,.3);
+}
+.about-card-title {
+  font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem;
+  color: var(--text-primary);
+}
+.about-card-sub { font-size: .75rem; color: var(--text-muted); margin-top: 2px; }
+
+.about-metric-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 20px;
+}
+.about-metric {
+  background: var(--bg-alt);
+  border: 1px solid var(--border-xsoft);
+  border-radius: var(--r-md); padding: 16px;
+}
+.about-metric-num {
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.8rem; line-height: 1;
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.about-metric-lbl { font-size: .72rem; color: var(--text-muted); margin-top: 4px; }
+
+.about-status-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+  border-radius: 50px; padding: 5px 13px;
+  font-size: .72rem; font-weight: 600; color: var(--text-body);
+}
+.status-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+.about-float-1 {
+  position: absolute; right: -28px; bottom: 40px;
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-md); padding: 14px 18px;
+  box-shadow: var(--shadow-md);
+}
+.about-float-1-val {
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.6rem;
+  color: var(--blue);
+}
+.about-float-1-lbl { font-size: .7rem; color: var(--text-muted); }
+
+.about-text .section-body { margin-bottom: 28px; }
+.about-check-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.about-check-list li {
+  display: flex; align-items: center; gap: 10px;
+  font-size: .9rem; color: var(--text-body);
+}
+.about-check-list li::before {
+  content: '✓'; width: 22px; height: 22px; border-radius: var(--r-xs);
+  background: var(--green-light); color: var(--green);
+  font-size: .75rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+/* ============================================
+   FEATURES SECTION
+   ============================================ */
+#features {
+  padding: 110px 52px;
+  max-width: 1200px; margin: 0 auto;
+  background: var(--bg-alt);
+}
+.features-header { text-align: center; margin-bottom: 64px; }
+.features-header .section-body { margin: 0 auto; text-align: center; }
+.features-header .section-eyebrow { justify-content: center; }
+.features-header .section-eyebrow::before { display: none; }
+
+.features-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+}
+.feature-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-lg); padding: 28px;
+  transition: all .26s; position: relative; overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+.feature-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+  opacity: 0; transition: opacity .26s;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(37,99,235,.25);
+  box-shadow: 0 12px 36px rgba(37,99,235,.1);
+}
+.feature-card:hover::after { opacity: 1; }
+
+.feature-icon {
+  width: 48px; height: 48px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.35rem; margin-bottom: 18px;
+}
+.fi-blue   { background: var(--blue-light);   color: var(--blue);   }
+.fi-green  { background: var(--green-light);  color: var(--green);  }
+.fi-red    { background: var(--red-light);    color: var(--red);    }
+.fi-teal   { background: var(--teal-light);   color: var(--teal);   }
+.fi-purple { background: var(--purple-light); color: var(--purple); }
+.fi-yellow { background: var(--yellow-light); color: var(--yellow); }
+
+.feature-title {
+  font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem;
+  color: var(--text-primary); margin-bottom: 8px;
+}
+.feature-desc {
+  font-size: .85rem; color: var(--text-muted); line-height: 1.65;
+}
+.feature-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 16px; font-size: .7rem; font-weight: 700;
+  color: var(--blue); background: var(--blue-light);
+  border: 1px solid rgba(37,99,235,.18);
+  border-radius: 50px; padding: 3px 10px;
+     user-select: none;
+   -webkit-user-select: none;
+}
+
+.feature-card{
+    user-select: none;
+   -webkit-user-select: none;
+   cursor: pointer;
+}
+
+.feature-card.big {
+   grid-column: span 2; display: flex; align-items: flex-start; gap: 26px;
+
+ }
+
+.feature-card.big .feature-icon { width: 56px; height: 56px; font-size: 1.6rem; flex-shrink: 0; }
+
+/* ============================================
+   DOCTORS SECTION
+   ============================================ */
+#doctors {
+  padding: 110px 52px;
+  max-width: 1200px; margin: 0 auto;
+}
+.doctors-header { margin-bottom: 56px; }
+
+.doctors-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.doctor-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-lg); overflow: hidden;
+  transition: all .26s; box-shadow: var(--shadow-sm);
+    user-select: none;
+   -webkit-user-select: none;
+   cursor: pointer;
+}
+.doctor-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(37,99,235,.25);
+  box-shadow: 0 16px 48px rgba(37,99,235,.13);
+}
+
+.doctor-card-photo {
+  height: 180px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+/* Light, airy photo backgrounds — keeping the same gradients but starting from a light tint */
+.dc-1 .doctor-card-photo { background: linear-gradient(155deg, #EFF6FF 0%, #BFDBFE 35%, #2563EB 100%); }
+.dc-2 .doctor-card-photo { background: linear-gradient(155deg, #F0FDFA 0%, #99F6E4 35%, #0D9488 100%); }
+.dc-3 .doctor-card-photo { background: linear-gradient(155deg, #F5F3FF 0%, #DDD6FE 35%, #7C3AED 100%); }
+.dc-4 .doctor-card-photo { background: linear-gradient(155deg, #FFF1F2 0%, #FECDD3 35%, #DC2626 100%); }
+
+.doctor-card-photo-inner {
+  width: 90px; height: 90px; border-radius: 50%;
+  background: rgba(255,255,255,.55);
+  border: 3px solid rgba(255,255,255,.85);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.6rem; color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  text-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+.doctor-avail {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(255,255,255,.9);
+  border: 1px solid rgba(22,163,74,.3);
+  border-radius: 50px; padding: 3px 9px;
+  font-size: .65rem; font-weight: 700; color: var(--green);
+  display: flex; align-items: center; gap: 4px;
+  box-shadow: var(--shadow-xs);
+}
+.doctor-avail-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 2px var(--green-light);
+}
+
+.doctor-card-body { padding: 18px 20px; }
+.doctor-name {
+  font-family: 'Outfit', sans-serif; font-weight: 700; font-size: .97rem;
+  color: var(--text-primary); margin-bottom: 3px;
+}
+.doctor-spec { font-size: .75rem; color: var(--blue); font-weight: 600; margin-bottom: 10px; }
+.doctor-bio {
+  font-size: .78rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px;
+}
+.doctor-meta { display: flex; gap: 7px; flex-wrap: wrap; }
+.doctor-meta-pill {
+  font-size: .67rem; font-weight: 600;
+  padding: 3px 9px; border-radius: 50px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+}
+
+/* ============================================
+   REVIEWS SECTION
+   ============================================ */
+#reviews {
+  padding: 110px 52px;
+  max-width: 1200px; margin: 0 auto;
+  background: var(--bg-alt);
+}
+.reviews-header { text-align: center; margin-bottom: 56px; }
+.reviews-header .section-eyebrow { justify-content: center; }
+.reviews-header .section-eyebrow::before { display: none; }
+.reviews-avg {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--yellow-light); border: 1px solid rgba(217,119,6,.2);
+  border-radius: 50px; padding: 7px 18px; margin-top: 16px;
+  font-size: .875rem; font-weight: 700; color: var(--yellow);
+}
+.stars { letter-spacing: 2px; }
+
+.reviews-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+}
+.review-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-lg); padding: 26px;
+  transition: all .26s; box-shadow: var(--shadow-xs);
+}
+.review-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(217,119,6,.2); }
+.review-stars { color: var(--yellow); font-size: 1rem; letter-spacing: 2px; margin-bottom: 14px; }
+.review-text {
+  font-size: .88rem; color: var(--text-body);
+  line-height: 1.7; margin-bottom: 18px; font-style: italic;
+}
+.review-text::before {
+  content: '\201C'; font-size: 2.2rem; color: var(--blue);
+  opacity: .35; line-height: 0; vertical-align: -.5rem; margin-right: 3px;
+}
+.review-author { display: flex; align-items: center; gap: 10px; }
+.review-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.review-author-name { font-size: .82rem; font-weight: 700; color: var(--text-primary); }
+.review-author-role { font-size: .7rem; color: var(--text-subtle); }
+
+.review-card.featured {
+  background: linear-gradient(155deg, var(--blue-xlight), var(--blue-light));
+  border-color: rgba(37,99,235,.2);
+}
+
+/* ============================================
+   FAQ SECTION
+   ============================================ */
+#faq {
+  padding: 110px 52px;
+  max-width: 900px; margin: 0 auto;
+}
+.faq-header { text-align: center; margin-bottom: 52px; }
+.faq-header .section-eyebrow { justify-content: center; }
+.faq-header .section-eyebrow::before { display: none; }
+
+.faq-list { display: flex; flex-direction: column; gap: 10px; }
+.faq-item {
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-md); overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+  box-shadow: var(--shadow-xs);
+}
+.faq-item.open {
+  border-color: rgba(37,99,235,.3);
+  box-shadow: 0 4px 20px rgba(37,99,235,.08);
+}
+.faq-q {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; cursor: pointer;
+  font-family: 'Outfit', sans-serif; font-weight: 600; font-size: .97rem;
+  color: var(--text-primary); gap: 16px; transition: background .18s;
+}
+.faq-q:hover { background: var(--blue-xlight); }
+.faq-icon {
+  width: 28px; height: 28px; border-radius: var(--r-xs); flex-shrink: 0;
+  background: var(--blue-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue); font-size: 1.1rem; font-weight: 700;
+  transition: transform .25s, background .2s, color .2s;
+}
+.faq-item.open .faq-icon {
+  transform: rotate(45deg);
+  background: var(--blue); color: #fff;
+}
+.faq-a {
+  display: none; padding: 0 24px 20px;
+  font-size: .9rem; color: var(--text-muted); line-height: 1.75;
+  border-top: 1px solid var(--border-xsoft);
+}
+.faq-item.open .faq-a { display: block; padding-top: 16px; }
+
+/* ============================================
+   CONTACT SECTION
+   ============================================ */
+#contact {
+  padding: 110px 52px;
+  max-width: 1200px; margin: 0 auto;
+  background: var(--bg-alt);
+}
+.contact-wrapper {
+  display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px;
+  align-items: start;
+}
+.contact-info { display: flex; flex-direction: column; gap: 18px; }
+.contact-info-header { margin-bottom: 6px; }
+.contact-detail {
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-md); padding: 18px 20px;
+  display: flex; align-items: flex-start; gap: 14px;
+  transition: transform .18s, border-color .18s;
+  box-shadow: var(--shadow-xs);
+}
+.contact-detail:hover { transform: translateX(4px); border-color: rgba(37,99,235,.2); }
+.contact-detail-icon {
+  width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+}
+.cdi-red    { background: var(--red-light); }
+.cdi-blue   { background: var(--blue-light); }
+.cdi-green  { background: var(--green-light); }
+.cdi-yellow { background: var(--yellow-light); }
+.contact-detail-lbl {
+  font-size: .71rem; font-weight: 700; color: var(--blue);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px;
+}
+.contact-detail-val {
+  font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem;
+  color: var(--text-primary);
+}
+.contact-detail-note { font-size: .71rem; color: var(--text-subtle); margin-top: 2px; }
+
+.contact-form {
+  background: var(--surface);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-xl); padding: 36px;
+  box-shadow: var(--shadow-lg);
+}
+.contact-form-title {
+  font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.25rem;
+  color: var(--text-primary); margin-bottom: 24px;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block; font-size: .78rem; font-weight: 600;
+  color: var(--text-secondary); margin-bottom: 7px;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 11px 16px;
+  background: var(--bg-alt);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  font-family: 'Manrope', sans-serif; font-size: .88rem;
+  outline: none; transition: border-color .18s, background .18s, box-shadow .18s;
+}
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text-subtle); }
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  border-color: var(--blue-mid);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+.form-select { cursor: pointer; -webkit-appearance: none; }
+.form-select option { background: #fff; color: var(--text-primary); }
+.form-textarea { resize: vertical; min-height: 100px; }
+.form-submit {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+  color: #fff; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .97rem;
+  border: none; border-radius: 50px; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(37,99,235,.35);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all .22s; margin-top: 8px;
+}
+.form-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,99,235,.5); }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+  padding: 60px 52px 32px;
+  border-top: 1px solid var(--border-soft);
+  max-width: 1200px; margin: 0 auto;
+}
+.footer-top {
+  display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 40px; margin-bottom: 48px;
+}
+.footer-brand-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1rem;
+  color: var(--text-primary); margin-bottom: 14px;
+}
+.footer-brand-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.footer-brand-desc {
+  font-size: .83rem; color: var(--text-muted); line-height: 1.7;
+  max-width: 240px; margin-bottom: 20px;
+}
+.footer-socials { display: flex; gap: 10px; }
+.footer-social {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-soft);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: .95rem;
+  text-decoration: none; transition: all .18s;
+}
+.footer-social:hover { background: var(--blue-light); color: var(--blue); border-color: rgba(37,99,235,.25); }
+.footer-col-title {
+  font-family: 'Outfit', sans-serif; font-weight: 700; font-size: .9rem;
+  color: var(--text-primary); margin-bottom: 16px;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-links a {
+  text-decoration: none; color: var(--text-muted); font-size: .83rem; transition: color .18s;
+}
+.footer-links a:hover { color: var(--blue); }
+.footer-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 24px; border-top: 1px solid var(--border-xsoft);
+  font-size: .78rem; color: var(--text-subtle); flex-wrap: wrap; gap: 10px;
+}
+.footer-bottom-links { display: flex; gap: 20px; }
+.footer-bottom-links a { color: var(--text-subtle); text-decoration: none; transition: color .18s; }
+.footer-bottom-links a:hover { color: var(--blue); }
+
+/* ============================================
+   FADE-UP ANIMATION
+   ============================================ */
+.fade-up {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media(max-width:1100px){
+  #about { grid-template-columns: 1fr; gap: 40px; }
+  .about-float-1 { display: none; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .feature-card.big { grid-column: span 2; }
+  .doctors-grid { grid-template-columns: 1fr 1fr; }
+  .reviews-grid { grid-template-columns: 1fr 1fr; }
+  .contact-wrapper { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 28px; }
+}
+@media(max-width:768px){
+  #home, #about, #features, #doctors, #reviews, #faq, #contact { padding: 80px 24px; }
+  footer { padding: 48px 24px 24px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .feature-card.big { grid-column: span 1; flex-direction: column; }
+  .doctors-grid { grid-template-columns: 1fr 1fr; }
+  .reviews-grid { grid-template-columns: 1fr; }
+  .hero-stats { flex-direction: column; gap: 16px; padding: 24px; }
+  .hero-stat + .hero-stat::before { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+}
+@media(max-width:480px){
+  .doctors-grid { grid-template-columns: 1fr; }
+  .hero-btns { flex-direction: column; align-items: center; }
+  .about-metric-row { grid-template-columns: 1fr; }
+  .reviews-grid { grid-template-columns: 1fr; }
+}
+</style> -->
+
+</head>
+<body>
+
+<!-- == NAV == -->
+<nav id="navbar">
+  <div class="nav-brand">
+    <div class="nav-brand-icon">🏥</div>
+    <span class="nav-brand-name">ERS<span>Health</span></span>
+  </div>
+
+  <div class="nav-links" id="navLinks">
+    <a href="#home" class="active">Home</a>
+    <a href="#about">About</a>
+    <a href="#features">Features</a>
+    <a href="#doctors">Doctors</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact">Contact</a>
+  </div>
+
+  <div class="nav-actions">
+    <a href="index.html" class="nav-login" id="loginBtn">
+      <i class="ti ti-login"></i> Login
+    </a>
+    <button class="nav-cta-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+      <i class="ti ti-urgent"></i> Emergency
+    </button>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+
+<!-- == HERO == -->
+<section id="home">
+  <div class="dot-pattern"></div>
+  <div class="dot-pattern2"></div>
+
+  <div class="hero-chip fade-up">
+    <span class="hero-chip-dot"></span>
+    24/7 Emergency Room Management System
+  </div>
+
+  <h1 class="hero-h1 fade-up" style="transition-delay:.1s">
+    Advanced <span class="accent">Clinical</span> Care<br>
+    Powered by <span class="accent2">Smart</span> Triage
+  </h1>
+
+  <p class="hero-sub fade-up" style="transition-delay:.2s">
+    City General's ERMS streamlines patient intake, real-time triage, bed allocation,
+    and clinical documentation — so every second counts.
+  </p>
+
+  <div class="hero-btns fade-up" style="transition-delay:.3s">
+    <!--
+      HERO CTA — href="#" temporarily.
+      Replace href="#" with href="index.html" when ready.
+    -->
+    <a href="index.html" class="btn-hero-primary">
+      <i class="ti ti-login"></i> Get Start
+    </a>
+    <a href="#about" class="btn-hero-outline">
+      <i class="ti ti-info-circle"></i> Learn More
+    </a>
+  </div>
+
+  <div class="hero-stats fade-up" style="transition-delay:.45s">
+    <div class="hero-stat">
+      <div class="hero-stat-num">98%</div>
+      <div class="hero-stat-lbl">Triage Accuracy</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">4 min</div>
+      <div class="hero-stat-lbl">Avg. Response Time</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">1,500+</div>
+      <div class="hero-stat-lbl">Patients / Month</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">40</div>
+      <div class="hero-stat-lbl">ER Beds Available</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+
+<!-- == ABOUT == -->
+<section id="about">
+  <div class="about-visual fade-up">
+    <div class="about-main-card">
+      <div class="about-card-header">
+        <div class="about-logo">🏥</div>
+        <div>
+          <div class="about-card-title">City General Hospital</div>
+          <div class="about-card-sub">Emergency Room Management System</div>
+        </div>
+      </div>
+      <div class="about-metric-row">
+        <div class="about-metric">
+          <div class="about-metric-num">24/7</div>
+          <div class="about-metric-lbl">Always Operational</div>
+        </div>
+        <div class="about-metric">
+          <div class="about-metric-num">60+</div>
+          <div class="about-metric-lbl">Medical Staff</div>
+        </div>
+        <div class="about-metric">
+          <div class="about-metric-num">40</div>
+          <div class="about-metric-lbl">ER Beds</div>
+        </div>
+        <div class="about-metric">
+          <div class="about-metric-num">15+</div>
+          <div class="about-metric-lbl">Specialties</div>
+        </div>
+      </div>
+      <div class="about-status-row">
+        <div class="status-pill">
+          <span class="dot" style="background:#16A34A"></span> System Online
+        </div>
+        <div class="status-pill">
+          <span class="dot" style="background:#2563EB"></span> HL7 Compliant
+        </div>
+        <div class="status-pill">
+          <span class="dot" style="background:#D97706"></span> HIPAA Secured
+        </div>
+      </div>
+    </div>
+    <div class="about-float-1">
+      <div class="about-float-1-val">98%</div>
+      <div class="about-float-1-lbl">Patient Satisfaction</div>
+    </div>
+  </div>
+
+  <div class="about-text fade-up" style="transition-delay:.15s">
+    <div class="section-eyebrow">About Us</div>
+    <h2 class="section-heading">Built for the<br>Modern Emergency Room</h2>
+    <p class="section-body">
+      City General Hospital's ERMS was designed to solve the core challenge of emergency care:
+      information fragmentation. Our system unifies patient registration, real-time triage,
+      bed management, clinical documentation, and discharge in a single connected platform —
+      inspired by HL7 FHIR standards and decades of clinical workflow research.
+    </p>
+    <ul class="about-check-list">
+      <li>Real-time triage with ESI priority scoring (P1–P3)</li>
+      <li>Role-based access: Admin, Nurse, Doctor, Patient portals</li>
+      <li>NDC drug prescriptions &amp; ICD-10 coded diagnoses</li>
+      <li>Live bed capacity monitoring &amp; automated assignment</li>
+      <li>Complete audit trail for every clinical action</li>
+      <li>Responsive design — works on any device, any screen size</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- == FEATURES == -->
+<section id="features">
+  <div class="features-header fade-up">
+    <div class="section-eyebrow">Features</div>
+    <h2 class="section-heading">Everything a Modern ER Needs</h2>
+    <p class="section-body">
+      From patient arrival to discharge, ERMS handles every step of the clinical journey
+      with precision, speed, and compliance.
+    </p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card big fade-up" style="transition-delay:.05s">
+      <div class="feature-icon fi-blue" style="width:56px;height:56px;font-size:1.6rem;flex-shrink:0">
+        <i class="ti ti-activity-heartbeat"></i>
+      </div>
+      <div>
+        <div class="feature-title">Real-Time Triage &amp; Vitals</div>
+        <div class="feature-desc">Nurses record BP, HR, SpO₂, Temperature, and Pain Scale directly in the system. The CDS engine automatically flags P1 Critical when HR&gt;120 or SpO₂&lt;90%, preventing missed escalations. ESI priority badges update live across all dashboards.</div>
+        <span class="feature-tag"><i class="ti ti-brain"></i> AI-Assisted CDS</span>
+      </div>
+    </div>
+
+    <div class="feature-card fade-up" style="transition-delay:.1s">
+      <div class="feature-icon fi-green"><i class="ti ti-bed"></i></div>
+      <div class="feature-title">Bed Management</div>
+      <div class="feature-desc">Live ward occupancy with instant bed assignment. Admin gets a visual bed map showing Available, Occupied, and Maintenance states across all ER bays.</div>
+      <span class="feature-tag">Live Sync</span>
+    </div>
+
+    <div class="feature-card fade-up" style="transition-delay:.15s">
+      <div class="feature-icon fi-purple"><i class="ti ti-pill"></i></div>
+      <div class="feature-title">NDC Prescriptions</div>
+      <div class="feature-desc">Doctors search a full drug library by name or NDC code with autocomplete. Drug interaction warnings fire automatically before submission.</div>
+      <span class="feature-tag">Drug Safety</span>
+    </div>
+
+    <div class="feature-card fade-up" style="transition-delay:.2s">
+      <div class="feature-icon fi-red"><i class="ti ti-stethoscope"></i></div>
+      <div class="feature-title">ICD-10 Diagnoses</div>
+      <div class="feature-desc">Physicians document structured diagnoses using ICD-10 codes with a free-text treatment plan, enabling interoperability and clinical reporting.</div>
+      <span class="feature-tag">HL7 FHIR</span>
+    </div>
+
+    <div class="feature-card fade-up" style="transition-delay:.25s">
+      <div class="feature-icon fi-teal"><i class="ti ti-users"></i></div>
+      <div class="feature-title">Role-Based Access</div>
+      <div class="feature-desc">Four distinct portals — Admin, Nurse, Doctor, and Patient — each with tailored dashboards, permissions, and workflows. No feature overlap, zero confusion.</div>
+      <span class="feature-tag">RBAC</span>
+    </div>
+
+    <div class="feature-card fade-up" style="transition-delay:.3s">
+      <div class="feature-icon fi-yellow"><i class="ti ti-clipboard-list"></i></div>
+      <div class="feature-title">Full Audit Trail</div>
+      <div class="feature-desc">Every bed assignment, triage action, diagnosis, and discharge is logged with timestamp, user, and target — providing complete accountability for clinical governance.</div>
+      <span class="feature-tag">Compliance</span>
+    </div>
+
+    <div class="feature-card fade-up" style="transition-delay:.35s">
+      <div class="feature-icon fi-blue"><i class="ti ti-user-heart"></i></div>
+      <div class="feature-title">Patient Portal</div>
+      <div class="feature-desc">Patients log in to view their own vitals, diagnosis, prescriptions, visit timeline, and assigned medical team — no need to call the desk.</div>
+      <span class="feature-tag">Self-Service</span>
+    </div>
+
+    <div class="feature-card fade-up" style="transition-delay:.4s">
+      <div class="feature-icon fi-green"><i class="ti ti-device-mobile"></i></div>
+      <div class="feature-title">Fully Responsive</div>
+      <div class="feature-desc">Every dashboard works seamlessly on desktop, tablet, and mobile. Mobile sidebar collapses to a hamburger drawer. No horizontal scrolling, ever.</div>
+      <span class="feature-tag">Mobile-First</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- == DOCTORS == -->
+<section id="doctors">
+  <div class="doctors-header fade-up">
+    <div class="section-eyebrow">Our Team</div>
+    <h2 class="section-heading">Meet Our ER Specialists</h2>
+    <p class="section-body">
+      Our emergency department is staffed by board-certified physicians with decades of combined critical care experience.
+    </p>
+  </div>
+
+  <div class="doctors-grid">
+    <div class="doctor-card dc-1 fade-up" style="transition-delay:.05s">
+      <div class="doctor-card-photo">
+        <div class="doctor-card-photo-inner">AF</div>
+        <div class="doctor-avail"><span class="doctor-avail-dot"></span> On Duty</div>
+      </div>
+      <div class="doctor-card-body">
+        <div class="doctor-name">Dr. Alan Foster</div>
+        <div class="doctor-spec">Emergency Medicine</div>
+        <div class="doctor-bio">12 years in critical care with specialization in cardiac emergencies. Leads the ER triage team during peak hours.</div>
+        <div class="doctor-meta">
+          <span class="doctor-meta-pill">ID: DOC-00412</span>
+          <span class="doctor-meta-pill">ER Bay A</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="doctor-card dc-2 fade-up" style="transition-delay:.1s">
+      <div class="doctor-card-photo">
+        <div class="doctor-card-photo-inner">NR</div>
+        <div class="doctor-avail"><span class="doctor-avail-dot"></span> On Duty</div>
+      </div>
+      <div class="doctor-card-body">
+        <div class="doctor-name">Dr. Nora Reyes</div>
+        <div class="doctor-spec">Intensive Care Unit</div>
+        <div class="doctor-bio">ICU specialist with expertise in ventilator management and sepsis protocols. Board-certified in Critical Care Medicine.</div>
+        <div class="doctor-meta">
+          <span class="doctor-meta-pill">ID: DOC-00388</span>
+          <span class="doctor-meta-pill">ICU Ward</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="doctor-card dc-3 fade-up" style="transition-delay:.15s">
+      <div class="doctor-card-photo">
+        <div class="doctor-card-photo-inner">MK</div>
+        <div class="doctor-avail"><span class="doctor-avail-dot"></span> On Duty</div>
+      </div>
+      <div class="doctor-card-body">
+        <div class="doctor-name">Dr. Marcus Kim</div>
+        <div class="doctor-spec">Trauma Surgery</div>
+        <div class="doctor-bio">Fellowship-trained trauma surgeon handling high-acuity cases. 200+ major surgeries across motor vehicle and penetrating trauma.</div>
+        <div class="doctor-meta">
+          <span class="doctor-meta-pill">ID: DOC-00491</span>
+          <span class="doctor-meta-pill">OR Suite 3</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="doctor-card dc-4 fade-up" style="transition-delay:.2s">
+      <div class="doctor-card-photo">
+        <div class="doctor-card-photo-inner">LW</div>
+        <div class="doctor-avail"><span class="doctor-avail-dot"></span> On Duty</div>
+      </div>
+      <div class="doctor-card-body">
+        <div class="doctor-name">Dr. Laura Walsh</div>
+        <div class="doctor-spec">Cardiology</div>
+        <div class="doctor-bio">Interventional cardiologist covering ER cardiac emergencies. Specializes in STEMI response and heart failure management.</div>
+        <div class="doctor-meta">
+          <span class="doctor-meta-pill">ID: DOC-00503</span>
+          <span class="doctor-meta-pill">Cath Lab</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- == REVIEWS == -->
+<section id="reviews">
+  <div class="reviews-header fade-up">
+    <div class="section-eyebrow">Patient Reviews</div>
+    <h2 class="section-heading">What Our Patients Say</h2>
+    <div class="reviews-avg">
+      <span class="stars">★★★★★</span>
+      4.9 / 5 — Based on 1,200+ verified reviews
+    </div>
+  </div>
+
+  <div class="reviews-grid">
+    <div class="review-card featured fade-up" style="transition-delay:.05s">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">The ERMS patient portal changed everything. I could see my vitals, diagnosis, and prescriptions the moment they were entered. No more waiting at the desk for updates — pure peace of mind during a stressful time.</p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:linear-gradient(135deg,#1D4ED8,#3B82F6)">JA</div>
+        <div>
+          <div class="review-author-name">John Anderson</div>
+          <div class="review-author-role">ER Patient · Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-up" style="transition-delay:.1s">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">I was seen within 8 minutes of arriving. The triage nurse had everything logged instantly and my doctor already had my vitals before stepping into the room. Incredibly organized.</p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:linear-gradient(135deg,#0F766E,#0D9488)">SM</div>
+        <div>
+          <div class="review-author-name">Sara Martinez</div>
+          <div class="review-author-role">ER Patient · Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-up" style="transition-delay:.15s">
+      <div class="review-stars">★★★★☆</div>
+      <p class="review-text">As a first-time visitor to this ER, I was impressed by how seamlessly everything worked. The staff knew my history before I even finished explaining. Professional and efficient.</p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:linear-gradient(135deg,#6D28D9,#7C3AED)">RC</div>
+        <div>
+          <div class="review-author-name">Robert Chen</div>
+          <div class="review-author-role">ER Patient · Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-up" style="transition-delay:.2s">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">The discharge process was instant. I got a complete summary in the portal showing my diagnosis, medications, and follow-up instructions. No paperwork, no confusion.</p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:linear-gradient(135deg,#B91C1C,#DC2626)">AL</div>
+        <div>
+          <div class="review-author-name">Anna Lee</div>
+          <div class="review-author-role">ER Patient · Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-up" style="transition-delay:.25s">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">Dr. Foster and the triage team were exceptional. I could tell every action was being tracked and communicated instantly. The system clearly works because the care was seamless.</p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:linear-gradient(135deg,#15803D,#16A34A)">MB</div>
+        <div>
+          <div class="review-author-name">Michael Brown</div>
+          <div class="review-author-role">ER Patient · Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card fade-up" style="transition-delay:.3s">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">My mother was in critical condition and the team responded in under 5 minutes. The real-time updates in the patient portal kept our whole family informed throughout the night.</p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:linear-gradient(135deg,#C2410C,#EA580C)">HK</div>
+        <div>
+          <div class="review-author-name">Hassan Khalil</div>
+          <div class="review-author-role">Patient Family · Verified</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- == FAQ == -->
+<section id="faq">
+  <div class="faq-header fade-up">
+    <div class="section-eyebrow">FAQ</div>
+    <h2 class="section-heading">Frequently Asked Questions</h2>
+    <p class="section-body" style="margin:12px auto 0;text-align:center">
+      Everything you need to know about City General's Emergency Room Management System.
+    </p>
+  </div>
+
+  <div class="faq-list fade-up" style="transition-delay:.1s">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        How do I access the patient portal?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Your patient portal account is created by the hospital administration after your ER visit is registered. You will receive your username and a temporary password. Log in at the ERMS login page to view your vitals, diagnosis, prescriptions, and visit timeline.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        What information is visible in my patient portal?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Once logged in, you can see: your current visit status, triage vitals (BP, HR, SpO₂, Temperature, Pain Scale), your assigned nurse and doctor, diagnosis with ICD-10 code, treatment plan, all prescriptions with NDC codes and dosages, your bed/ward location, and a full chronological visit timeline from arrival to discharge.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        How does the triage priority system work?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Our ER uses the Emergency Severity Index (ESI) with three levels: P1 Critical (red) for immediate life threats, P2 Urgent (yellow) for high-risk conditions, and P3 Non-Urgent (green) for less severe cases. The system automatically flags P1 when vital signs indicate danger — for example, if heart rate exceeds 120 bpm or SpO₂ drops below 90%.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Is my medical data secure and private?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Yes. The ERMS is designed with HIPAA compliance in mind. Patient accounts can only view their own records. Staff accounts have role-based access — nurses see triage workflows, doctors see clinical data, and admins see operational data. Every action is logged in an immutable audit trail.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        How do doctors enter prescriptions in the system?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Physicians use the Clinical View panel to search the drug library by name or NDC code with live autocomplete. They enter dosage instructions and add drugs to the prescription list. The system checks for known drug interactions before submission and alerts the doctor if a conflict is detected.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Can the system handle multiple roles simultaneously?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Absolutely. The ERMS supports concurrent sessions across all four roles: Admin, Nurse, Doctor, and Patient. Changes made by one role — such as a nurse recording vitals — are immediately reflected on the doctor's and admin's dashboards, creating a truly real-time clinical environment.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        What happens when a patient is discharged?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">When a doctor marks a patient as "Discharged," the system automatically frees the assigned bed, updates the bed map, and logs the discharge event in the audit trail. The patient's portal remains accessible so they can review their complete visit record, diagnosis, and prescriptions at any time.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- == CONTACT == -->
+<section id="contact">
+  <div class="contact-wrapper">
+    <div class="contact-info fade-up">
+      <div class="contact-info-header">
+        <div class="section-eyebrow">Contact Us</div>
+        <h2 class="section-heading">We're Here<br>Around the Clock</h2>
+        <p class="section-body" style="margin-top:12px">
+          For emergencies, system support, or general inquiries — our team is always reachable.
+        </p>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon cdi-red">🚨</div>
+        <div>
+          <div class="contact-detail-lbl">Emergency Line</div>
+          <div class="contact-detail-val">+1 (800) 911-0001</div>
+          <div class="contact-detail-note">24 / 7 Immediate Response — do not hold</div>
+        </div>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon cdi-blue">🏥</div>
+        <div>
+          <div class="contact-detail-lbl">Main Hospital</div>
+          <div class="contact-detail-val">+1 (212) 555-0188</div>
+          <div class="contact-detail-note">General inquiries &amp; appointments</div>
+        </div>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon cdi-green">📋</div>
+        <div>
+          <div class="contact-detail-lbl">Admissions</div>
+          <div class="contact-detail-val">+1 (800) 475-2230</div>
+          <div class="contact-detail-note">Mon – Fri, 8 AM – 6 PM</div>
+        </div>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon cdi-yellow">📁</div>
+        <div>
+          <div class="contact-detail-lbl">Records &amp; Reports</div>
+          <div class="contact-detail-val">+1 (212) 555-0344</div>
+          <div class="contact-detail-note">Patient Records Department</div>
+        </div>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon cdi-blue">✉️</div>
+        <div>
+          <div class="contact-detail-lbl">Email</div>
+          <div class="contact-detail-val">erms@citygeneral.health</div>
+          <div class="contact-detail-note">System support &amp; feedback</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form fade-up" style="transition-delay:.15s">
+      <div class="contact-form-title">Send Us a Message</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" type="text" placeholder="Omar">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" type="text" placeholder="Hassan">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" placeholder="you@example.com">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input class="form-input" type="tel" placeholder="+20 XXX XXX XXXX">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Reason for Contact</label>
+        <select class="form-select">
+          <option value="">— Select a reason —</option>
+          <option>General Inquiry</option>
+          <option>Patient Records Request</option>
+          <option>System Support</option>
+          <option>Staff Account Issue</option>
+          <option>Feedback / Complaint</option>
+          <option>Partnership / Media</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-textarea" placeholder="Describe your inquiry in detail…"></textarea>
+      </div>
+
+      <button class="form-submit" onclick="handleFormSubmit(this)">
+        <i class="ti ti-send"></i> Send Message
+      </button>
+    </div>
+  </div>
+</section>
+
+
+<!-- == FOOTER == -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand-logo">
+        <div class="footer-brand-icon">🏥</div>
+        ERS Health
+      </div>
+      <div class="footer-brand-desc">
+        City General Hospital's Emergency Room Management System — connecting clinical teams and patients through smart, real-time care coordination.
+      </div>
+      <div class="footer-socials">
+        <a href="#" class="footer-social" title="Twitter"><i class="ti ti-brand-twitter"></i></a>
+        <a href="#" class="footer-social" title="LinkedIn"><i class="ti ti-brand-linkedin"></i></a>
+        <a href="#" class="footer-social" title="Facebook"><i class="ti ti-brand-facebook"></i></a>
+        <a href="#" class="footer-social" title="Email"><i class="ti ti-mail"></i></a>
+      </div>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Navigation</div>
+      <ul class="footer-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#doctors">Our Doctors</a></li>
+        <li><a href="#reviews">Patient Reviews</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="footer-col-title">System Access</div>
+      <ul class="footer-links">
+        <li><a href="#">Admin Dashboard</a></li>
+        <li><a href="#">Nurse Dashboard</a></li>
+        <li><a href="#">Doctor Dashboard</a></li>
+        <li><a href="#">Patient Portal</a></li>
+        <li><a href="#">Staff Login</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="tel:+18009110001">🚨 +1 (800) 911-0001</a></li>
+        <li><a href="tel:+12125550188">🏥 +1 (212) 555-0188</a></li>
+        <li><a href="mailto:erms@citygeneral.health">✉ erms@citygeneral.health</a></li>
+        <li><a href="#">📍 123 Medical Drive, New York</a></li>
+        <li><a href="#">🕐 ER Open 24 / 7</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div>© 2026 City General Hospital · ERMS. All rights reserved. | SBES240 — Biomedical &amp; Healthcare Data Engineering</div>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+      <a href="#">HIPAA Notice</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/landingpage.js"></script>
+
+<!-- <script>
+// ── Nav scroll ──────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── Nav active link ─────────────────────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks  = document.querySelectorAll('.nav-links a');
+function updateActive() {
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 140) cur = s.id; });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+}
+window.addEventListener('scroll', updateActive);
+
+// ── Hamburger ───────────────────────────────
+const hamburger  = document.getElementById('hamburger');
+const navLinksEl = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => {
+  navLinksEl.classList.toggle('open');
+  const open  = navLinksEl.classList.contains('open');
+  const spans = hamburger.querySelectorAll('span');
+  spans[0].style.transform = open ? 'rotate(45deg) translateY(7px)' : '';
+  spans[1].style.opacity   = open ? '0' : '1';
+  spans[2].style.transform = open ? 'rotate(-45deg) translateY(-7px)' : '';
+});
+navLinksEl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinksEl.classList.remove('open')));
+
+// ── Fade-up observer ────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+document.querySelectorAll('#home .fade-up').forEach((el, i) => {
+  setTimeout(() => el.classList.add('visible'), i * 120 + 80);
+});
+
+// ── FAQ accordion ───────────────────────────
+function toggleFaq(btn) {
+  const item   = btn.parentElement;
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ── Contact form ────────────────────────────
+function handleFormSubmit(btn) {
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Sending…';
+  setTimeout(() => {
+    btn.innerHTML = '<i class="ti ti-check"></i> Message Sent!';
+    btn.style.background = 'linear-gradient(135deg,#15803D,#16A34A)';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-send"></i> Send Message';
+      btn.style.background = '';
+    }, 3000);
+  }, 1400);
+}
+
+// ── Spin keyframe ───────────────────────────
+const s = document.createElement('style');
+s.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(s);
+
+// ── Hero counter animation ──────────────────
+function animateCount(el, target, suffix) {
+  let n = 0; const step = target / 60;
+  const t = setInterval(() => {
+    n += step;
+    if (n >= target) { clearInterval(t); el.textContent = target + suffix; return; }
+    el.textContent = Math.floor(n) + suffix;
+  }, 16);
+}
+const statsEl = document.querySelector('.hero-stats');
+const sIo = new IntersectionObserver(([entry]) => {
+  if (!entry.isIntersecting) return;
+  sIo.disconnect();
+  const nums = document.querySelectorAll('.hero-stat-num');
+  animateCount(nums[0], 98, '%');
+  animateCount(nums[2], 1500, '+');
+  animateCount(nums[3], 40, '');
+}, { threshold: 0.5 });
+if (statsEl) sIo.observe(statsEl);
+</script> -->
+
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERMS - Doctor</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/doctor.css">
+
+
+<!-- <style>
+/* ── HORIZONTAL SCROLL FIX ── */
+/* Prevent any child element from pushing the page wider than the viewport */
+html, body { overflow-x: hidden; max-width: 100%; }
+
+.shell { overflow-x: hidden; }
+
+.panel { max-width: 100%; overflow-x: hidden; }
+
+/* The main content area must not exceed viewport minus sidebar */
+.main {
+  width: calc(100% - var(--sidebar-w, 220px)) !important;
+  max-width: calc(100vw - var(--sidebar-w, 220px)) !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* On mobile sidebar is hidden, so full width */
+@media (max-width: 768px) {
+  .main {
+    width: 100% !important;
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+  }
+}
+
+/* All cards, grids, and layout containers must stay within their parent */
+.card, .stats-grid, .grid-2, .grid-3, .grid-3-2,
+.staff-card-grid, .pt-card-grid, .pt-rec-grid, .create-staff-grid,
+.acct-section, .acct-tabs, .acct-nav,
+.section-divider, .about-main-card, .features-grid,
+.doctors-grid, .reviews-grid, .contact-wrapper, .faq-list {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tables scroll inside their wrapper — never push the page */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table { min-width: 0; width: 100%; }
+
+/* Ensure no inline-width element overflows */
+[style*="min-width:"] { max-width: 100%; }
+</style> -->
+
+<!-- <style>
+/* ── DOCTOR-SPECIFIC OVERFLOW FIXES ── */
+
+/* Patient cards grid */
+#patientCards {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+  max-width: 100% !important;
+}
+@media (max-width: 600px) {
+  #patientCards { grid-template-columns: 1fr !important; }
+}
+
+/* Clinical view inline prescription list */
+#prescriptionList > div { max-width: 100%; box-sizing: border-box; flex-wrap: wrap; }
+
+/* Drug autocomplete dropdown stays inside its container */
+.autocomplete-dropdown { max-width: 100%; }
+</style> -->
+
+
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="shell">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="ti ti-activity-heartbeat" style="color:#fff;font-size:16px"></i></div>
+      <div><div class="sidebar-logo-text">ERMS</div><div class="sidebar-logo-sub">Doctor Portal</div></div>
+    </div>
+    <div class="sidebar-section">Clinical</div>
+    <a class="sidebar-link active" onclick="showPanel('mypatients')" href="#"><i class="ti ti-users"></i> My Patients <span class="badge-count" id="myPtCount">—</span></a>
+    <a class="sidebar-link" onclick="showPanel('clinical')" href="#"><i class="ti ti-stethoscope"></i> Clinical View</a>
+    <div class="sidebar-section">Records</div>
+    <a class="sidebar-link" onclick="showPanel('history')" href="#"><i class="ti ti-history"></i> Discharge History</a>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">AN</div>
+        <div><div class="sidebar-user-name" id="sidebarName">Dr. Ahmed Nour</div><div class="sidebar-user-role">Doctor</div></div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()"><i class="ti ti-logout"></i> Sign Out</button>
+    </div>
+  </aside>
+
+  <div style="flex:1;min-width:0;overflow-x:hidden">
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu"><i class="ti ti-menu-2"></i></button>
+      <div class="topbar-left">
+        <div class="topbar-title-wrap">
+          <div class="topbar-title" id="panelTitle">My Patients</div>
+          <div class="topbar-sub" id="panelSub">Active patients under your care</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn hide-mobile"><i class="ti ti-bell"></i></button>
+        <div class="topbar-avatar" id="topbarAvatar">AN</div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-user-heart" style="color:#2563EB"></i> Assigned</div><div class="stat-value" id="st-assigned">—</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-clock" style="color:#F59E0B"></i> Awaiting Exam</div><div class="stat-value" id="st-awaiting">—</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-pill" style="color:#22C55E"></i> Prescriptions</div><div class="stat-value" id="st-rx">—</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-check" style="color:#16A34A"></i> Discharged</div><div class="stat-value" id="st-discharged">—</div></div>
+      </div>
+
+      <!-- My Patients -->
+      <div class="panel active" id="panel-mypatients">
+        <div id="docCdsAlert"></div>
+        <div id="patientCards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px"></div>
+      </div>
+
+      <!-- Clinical View -->
+      <div class="panel" id="panel-clinical">
+        <div class="grid-3-2">
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-header">
+                <div><div class="card-title" id="clinPatientName">Select a patient</div><div class="card-subtitle" id="clinPatientMeta">Choose from your list</div></div>
+                <div id="clinPriorityBadge"></div>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Patient</label>
+                  <select class="form-input" id="clinPatientSelect" onchange="selectClinPatient()"><option value="">— Select patient —</option></select>
+                </div>
+                <div id="vitalsDisplay" style="display:none;margin-bottom:16px">
+                  <label class="form-label" style="margin-bottom:8px">Triage Vitals (recorded by nurse)</label>
+                  <div class="vitals-grid" id="vitalsGrid"></div>
+                </div>
+                <hr class="divider">
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:#0F172A;margin-bottom:12px">Diagnosis & Treatment</div>
+                <div class="form-group"><label class="form-label">ICD-10 Code</label><input type="text" class="form-input" id="dxICD" placeholder="e.g. I20.9" style="font-family:monospace"></div>
+                <div class="form-group"><label class="form-label">Diagnosis</label><input type="text" class="form-input" id="dxText" placeholder="Clinical diagnosis"></div>
+                <div class="form-group"><label class="form-label">Treatment Plan</label><textarea class="form-input" id="dxTreatment" rows="2" placeholder="Treatment plan…"></textarea></div>
+                <hr class="divider">
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:#0F172A;margin-bottom:12px">Prescription (NDC)</div>
+                <div id="prescriptionList"></div>
+                <div class="card" style="padding:12px;background:#F8FAFF;border-style:dashed;margin-bottom:14px">
+                  <div class="form-group" style="margin-bottom:8px">
+                    <label class="form-label">Drug Search (NDC)</label>
+                    <div class="autocomplete-wrap">
+                      <input type="text" class="form-input" id="drugSearch" placeholder="Type drug name…" oninput="searchDrug()" autocomplete="off">
+                      <div class="autocomplete-dropdown" id="drugDropdown"></div>
+                    </div>
+                    <div id="drugSelected" style="margin-top:6px;font-size:12px;color:#2563EB;font-weight:500"></div>
+                  </div>
+                  <div class="form-group" style="margin-bottom:8px"><label class="form-label">Dosage</label><input type="text" class="form-input" id="drugDose" placeholder="e.g. 1 tab twice daily"></div>
+                  <button class="btn btn-secondary btn-sm" onclick="addPrescription()"><i class="ti ti-plus"></i> Add Drug</button>
+                </div>
+                <hr class="divider">
+                <div class="form-group">
+                  <label class="form-label">Patient Outcome</label>
+                  <select class="form-input" id="dxOutcome">
+                    <option value="">— Select outcome —</option>
+                    <option value="discharged">Discharged</option>
+                    <option value="admitted">Admitted to Ward</option>
+                    <option value="referred">Referred to Specialist</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" style="width:100%" onclick="submitDiagnosis()"><i class="ti ti-clipboard-check"></i> Submit Clinical Record</button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-header"><div class="card-title">Patient Details</div></div>
+              <div class="card-body" id="clinPatientInfo"><div style="text-align:center;padding:20px;color:#94A3B8;font-size:13px">Select a patient</div></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Prior Diagnosis</div></div>
+              <div class="card-body" id="priorDx"><div style="font-size:13px;color:#94A3B8">No prior diagnosis on record</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="panel" id="panel-history">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Discharge History</div></div>
+          <div class="table-wrap"><table><thead><tr><th>Patient</th><th>Diagnosis</th><th>ICD-10</th><th>Outcome</th><th>Date</th></tr></thead><tbody id="historyTable"></tbody></table></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/doctor.js"></script>
+
+
+<!-- <script>
+let db=null, currentUser=null, selectedDrug=null, prescriptions=[];
+
+function init(){
+  currentUser=requireAuth('doctor');
+  if(!currentUser) return;
+  document.getElementById('sidebarAvatar').textContent=currentUser.avatar;
+  document.getElementById('sidebarName').textContent=currentUser.name;
+  document.getElementById('topbarAvatar').textContent=currentUser.avatar;
+  db=loadDB(); renderAll();
+}
+
+function renderAll(){ renderStats(); renderMyPatients(); renderClinSelect(); renderHistory(); }
+
+function renderStats(){
+  const all=db.patients.filter(p=>p.status!=='discharged');
+  const awaiting=all.filter(p=>p.status==='in-triage'||p.status==='in-progress').length;
+  const rx=db.diagnoses.filter(d=>d.doctorId===currentUser.id).reduce((s,d)=>s+d.prescriptions.length,0);
+  const disc=db.patients.filter(p=>p.assignedDoctorId===currentUser.id&&p.status==='discharged').length;
+  document.getElementById('st-assigned').textContent=all.length;
+  document.getElementById('st-awaiting').textContent=awaiting;
+  document.getElementById('st-rx').textContent=rx;
+  document.getElementById('st-discharged').textContent=disc;
+  document.getElementById('myPtCount').textContent=all.length;
+}
+
+function renderMyPatients(){
+  const active=db.patients.filter(p=>p.status!=='discharged');
+  const crits=active.filter(p=>{ const v=db.vitals.find(x=>x.patientId===p.id); return v&&(v.hr>120||v.spo2<90); }).map(p=>p.name);
+  document.getElementById('docCdsAlert').innerHTML=crits.length?`<div class="cds-alert" style="margin-bottom:16px"><i class="ti ti-alert-triangle"></i><strong>Critical Vitals:</strong> ${crits.join(', ')} — immediate attention required.</div>`:'';
+  document.getElementById('patientCards').innerHTML=active.map(p=>{
+    const v=db.vitals.find(x=>x.patientId===p.id);
+    const dx=db.diagnoses.find(x=>x.patientId===p.id);
+    const[bg,fc]=avatarColor(p.name);
+    const init=p.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+    return `<div class="card" style="overflow:hidden">
+      <div style="padding:16px 20px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;gap:12px">
+        <div style="width:42px;height:42px;border-radius:50%;background:${bg};color:${fc};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0">${init}</div>
+        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px;color:#0F172A">${p.name}</div><div style="font-size:12px;color:#64748B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.chiefComplaint}</div></div>
+        ${v?priorityBadge(v.priority):statusBadge(p.status)}
+      </div>
+      ${v?`<div style="padding:10px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#F8FAFF">
+        <div style="text-align:center"><div style="font-size:10px;color:#94A3B8">BP</div><div style="font-size:13px;font-weight:600">${v.bp}</div></div>
+        <div style="text-align:center"><div style="font-size:10px;color:#94A3B8">HR</div><div style="font-size:13px;font-weight:600;color:${v.hr>120?'#DC2626':'#0F172A'}">${v.hr}</div></div>
+        <div style="text-align:center"><div style="font-size:10px;color:#94A3B8">SpO₂</div><div style="font-size:13px;font-weight:600;color:${v.spo2<90?'#DC2626':'#0F172A'}">${v.spo2}%</div></div>
+        <div style="text-align:center"><div style="font-size:10px;color:#94A3B8">Temp</div><div style="font-size:13px;font-weight:600;color:${v.temp>39?'#D97706':'#0F172A'}">${v.temp}°</div></div>
+      </div>`:'<div style="padding:10px 20px;font-size:12px;color:#94A3B8;background:#F8FAFF">Awaiting triage vitals</div>'}
+      <div style="padding:10px 20px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:#64748B">Arrived ${timeAgo(p.arrivedAt)}</span>
+        <button class="btn btn-sm btn-primary" onclick="openClinical('${p.id}')"><i class="ti ti-stethoscope"></i> ${dx?'View Record':'Examine'}</button>
+      </div>
+    </div>`;
+  }).join('')||'<div style="grid-column:span 2;text-align:center;padding:40px;color:#94A3B8"><i class="ti ti-user-check" style="font-size:40px;display:block;margin-bottom:12px"></i>No active patients</div>';
+}
+
+function openClinical(id){ showPanel('clinical'); document.getElementById('clinPatientSelect').value=id; selectClinPatient(); }
+
+function renderClinSelect(){
+  const active=db.patients.filter(p=>p.status!=='discharged');
+  document.getElementById('clinPatientSelect').innerHTML='<option value="">— Select patient —</option>'+active.map(p=>`<option value="${p.id}">${p.name} — ${p.chiefComplaint}</option>`).join('');
+}
+
+function selectClinPatient(){
+  const id=document.getElementById('clinPatientSelect').value;
+  if(!id) return;
+  const p=db.patients.find(x=>x.id===id);
+  const v=db.vitals.find(x=>x.patientId===id);
+  const dx=db.diagnoses.find(x=>x.patientId===id);
+  const[bg,fc]=avatarColor(p.name);
+  const age=new Date().getFullYear()-new Date(p.dob).getFullYear();
+  document.getElementById('clinPatientName').textContent=p.name;
+  document.getElementById('clinPatientMeta').textContent=`${age} yrs · ${p.gender} · Arrived ${timeAgo(p.arrivedAt)}`;
+  document.getElementById('clinPriorityBadge').innerHTML=v?priorityBadge(v.priority):statusBadge(p.status);
+  if(v){
+    document.getElementById('vitalsDisplay').style.display='block';
+    const fhr=v.hr>120?'danger':v.hr>100?'warn':'ok';
+    const fsp=v.spo2<90?'danger':v.spo2<95?'warn':'ok';
+    const ftp=v.temp>39?'danger':v.temp>38?'warn':'ok';
+    document.getElementById('vitalsGrid').innerHTML=`
+      <div class="vital-box"><div class="vital-label">Blood Pressure</div><div class="vital-value">${v.bp}</div><div class="vital-unit">mmHg</div></div>
+      <div class="vital-box"><div class="vital-label">Heart Rate</div><div class="vital-value">${v.hr}</div><div class="vital-flag ${fhr}">${v.hr>120?'⚠ High':v.hr>100?'↑ Elevated':'✓ Normal'}</div></div>
+      <div class="vital-box"><div class="vital-label">SpO₂</div><div class="vital-value">${v.spo2}%</div><div class="vital-flag ${fsp}">${v.spo2<90?'⚠ Critical':v.spo2<95?'↓ Low':'✓ Normal'}</div></div>
+      <div class="vital-box"><div class="vital-label">Temperature</div><div class="vital-value">${v.temp}</div><div class="vital-flag ${ftp}">${v.temp>39?'⚠ High':v.temp>38?'↑ Elevated':'✓ Normal'}<div class="vital-unit">°C</div></div></div>
+      <div class="vital-box"><div class="vital-label">Pain Scale</div><div class="vital-value">${v.painScale}</div><div class="vital-unit">/10</div></div>
+      <div class="vital-box"><div class="vital-label">Priority</div><div style="margin-top:4px">${priorityBadge(v.priority)}</div></div>`;
+  } else { document.getElementById('vitalsDisplay').style.display='none'; }
+  document.getElementById('clinPatientInfo').innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:48px;height:48px;border-radius:50%;background:${bg};color:${fc};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">${p.name.split(' ').map(n=>n[0]).join('').slice(0,2)}</div><div><div style="font-weight:600;font-size:14px">${p.name}</div><div style="font-size:12px;color:#64748B">${p.nationalId}</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px"><div><span style="color:#94A3B8">DOB</span><br><strong>${p.dob}</strong></div><div><span style="color:#94A3B8">Gender</span><br><strong>${p.gender}</strong></div><div style="grid-column:span 2"><span style="color:#94A3B8">Chief Complaint</span><br><strong>${p.chiefComplaint}</strong></div><div><span style="color:#94A3B8">Status</span><br>${statusBadge(p.status)}</div></div>`;
+  if(dx){
+    const rxHTML=dx.prescriptions.map(r=>`<div style="font-size:12px;background:#F8FAFF;border:1px solid #E2E8F0;border-radius:8px;padding:8px;margin-top:6px"><strong>${r.drug}</strong> <span style="color:#94A3B8;font-size:10px">${r.ndc}</span><br><span style="color:#64748B">${r.dose}</span></div>`).join('');
+    document.getElementById('priorDx').innerHTML=`<div style="font-size:13px;margin-bottom:8px"><code style="background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:11px">${dx.icd10Code}</code></div><div style="font-weight:500;font-size:13px;color:#0F172A;margin-bottom:6px">${dx.diagnosis}</div><div style="font-size:12.5px;color:#475569;margin-bottom:8px">${dx.treatment}</div>${rxHTML}`;
+    document.getElementById('dxICD').value=dx.icd10Code;
+    document.getElementById('dxText').value=dx.diagnosis;
+    document.getElementById('dxTreatment').value=dx.treatment;
+    prescriptions=[...dx.prescriptions]; renderPrescriptionList();
+  } else {
+    document.getElementById('priorDx').innerHTML='<div style="font-size:13px;color:#94A3B8">No prior diagnosis</div>';
+    document.getElementById('dxICD').value=''; document.getElementById('dxText').value=''; document.getElementById('dxTreatment').value='';
+    prescriptions=[]; renderPrescriptionList();
+  }
+}
+
+function searchDrug(){
+  const q=document.getElementById('drugSearch').value.toLowerCase();
+  const dd=document.getElementById('drugDropdown');
+  if(!q||q.length<2){ dd.classList.remove('open'); return; }
+  const matches=db.drugs.filter(d=>d.name.toLowerCase().includes(q)||d.ndc.includes(q));
+  dd.innerHTML=matches.map(d=>`<div class="autocomplete-item" onclick="pickDrug('${d.ndc}','${d.name}','${d.category}')"><span class="drug-name">${d.name}</span><span class="drug-cat">${d.category}</span></div>`).join('')||'<div class="autocomplete-item" style="color:#94A3B8">No matches</div>';
+  dd.classList.add('open');
+}
+function pickDrug(ndc,name,cat){ selectedDrug={ndc,name,category:cat}; document.getElementById('drugSearch').value=name; document.getElementById('drugSelected').innerHTML=`<i class="ti ti-check" style="color:#16A34A"></i> NDC: ${ndc} · ${cat}`; document.getElementById('drugDropdown').classList.remove('open'); }
+
+function addPrescription(){
+  if(!selectedDrug){ alert('Select a drug first'); return; }
+  const dose=document.getElementById('drugDose').value;
+  if(!dose){ alert('Enter dosage instructions'); return; }
+  prescriptions.push({ndc:selectedDrug.ndc,drug:selectedDrug.name,dose});
+  selectedDrug=null; document.getElementById('drugSearch').value=''; document.getElementById('drugDose').value=''; document.getElementById('drugSelected').innerHTML='';
+  renderPrescriptionList();
+}
+function removePrescription(i){ prescriptions.splice(i,1); renderPrescriptionList(); }
+function renderPrescriptionList(){ document.getElementById('prescriptionList').innerHTML=prescriptions.map((rx,i)=>`<div style="display:flex;align-items:center;gap:8px;background:#F0FDF4;border:1px solid #DCFCE7;border-radius:8px;padding:8px 12px;margin-bottom:6px"><i class="ti ti-pill" style="color:#16A34A;font-size:15px;flex-shrink:0"></i><div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:500;color:#0F172A">${rx.drug}</div><div style="font-size:11px;color:#64748B">${rx.ndc} · ${rx.dose}</div></div><button onclick="removePrescription(${i})" style="color:#94A3B8;font-size:14px;flex-shrink:0"><i class="ti ti-x"></i></button></div>`).join(''); }
+
+function submitDiagnosis(){
+  const patId=document.getElementById('clinPatientSelect').value;
+  const icd=document.getElementById('dxICD').value.trim();
+  const text=document.getElementById('dxText').value.trim();
+  const treatment=document.getElementById('dxTreatment').value.trim();
+  const outcome=document.getElementById('dxOutcome').value;
+  if(!patId){ alert('Select a patient'); return; }
+  if(!icd||!text||!treatment){ alert('Fill in diagnosis, ICD-10, and treatment plan'); return; }
+  if(!outcome){ alert('Select a patient outcome'); return; }
+  const existing=db.diagnoses.findIndex(d=>d.patientId===patId);
+  const entry={id:'d'+Date.now(),patientId:patId,doctorId:currentUser.id,icd10Code:icd,diagnosis:text,treatment,prescriptions:[...prescriptions],outcome,timestamp:new Date().toISOString()};
+  if(existing>=0) db.diagnoses[existing]=entry; else db.diagnoses.push(entry);
+  const patient=db.patients.find(p=>p.id===patId);
+  patient.status=outcome; patient.assignedDoctorId=currentUser.id;
+  if(outcome==='discharged'&&patient.bedId){ const bed=db.beds.find(b=>b.id===patient.bedId); if(bed){ bed.status='available'; delete bed.patientId; } patient.bedId=null; }
+  addAuditLog(outcome==='discharged'?'PATIENT_DISCHARGED':'DIAGNOSIS_ENTERED',patient.name);
+  saveDB(db); db=loadDB(); renderAll(); showPanel('mypatients');
+  alert(`Record submitted for ${patient.name}. Outcome: ${outcome.toUpperCase()}`);
+}
+
+function renderHistory(){
+  document.getElementById('historyTable').innerHTML=db.diagnoses.filter(d=>d.doctorId===currentUser.id).map(d=>{
+    const p=db.patients.find(x=>x.id===d.patientId);
+    return `<tr><td class="name">${p?.name||'?'}</td><td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.diagnosis}</td><td><code style="background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:11px">${d.icd10Code}</code></td><td>${d.outcome?statusBadge(d.outcome):'<span class="badge badge-gray">Pending</span>'}</td><td style="font-size:12px;white-space:nowrap">${timeAgo(d.timestamp)}</td></tr>`;
+  }).join('')||'<tr><td colspan="5" style="text-align:center;color:#94A3B8;padding:20px">No records yet</td></tr>';
+}
+
+const PM={mypatients:['My Patients','Active patients under your care'],clinical:['Clinical View','Examination, diagnosis, and prescriptions'],history:['Discharge History','Completed clinical records']};
+function showPanel(id){
+  if(window.innerWidth<=768) closeSidebar();
+
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+
+  const targetPanel = document.getElementById('panel-' + id);
+  if (targetPanel) {
+    targetPanel.classList.add('active');
+  }
+
+  const activeLink = document.querySelector(`.sidebar-link[onclick*="showPanel('${id}')"]`);
+  if (activeLink) {
+    activeLink.classList.add('active');
+  }
+  
+
+  const[t,s]=PM[id]||['Panel',''];
+  document.getElementById('panelTitle').textContent=t;
+  document.getElementById('panelSub').textContent=s;
+  if(id==='clinical') renderClinSelect();
+}
+
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); document.body.style.overflow=document.getElementById('sidebar').classList.contains('open')?'hidden':''; }
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); document.body.style.overflow=''; }
+document.addEventListener('click',e=>{ if(!e.target.closest('.autocomplete-wrap')) document.getElementById('drugDropdown').classList.remove('open'); });
+
+init();
+</script> -->
+
+
+</body>
+</html>

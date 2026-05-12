@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERMS - Patient Portal</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏥</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/patient.css">
+
+<!-- <style>
+/* ── HORIZONTAL SCROLL FIX ── */
+/* Prevent any child element from pushing the page wider than the viewport */
+html, body { overflow-x: hidden; max-width: 100%; }
+
+.shell { overflow-x: hidden; }
+
+.panel { max-width: 100%; overflow-x: hidden; }
+
+/* The main content area must not exceed viewport minus sidebar */
+.main {
+  width: calc(100% - var(--sidebar-w, 220px)) !important;
+  max-width: calc(100vw - var(--sidebar-w, 220px)) !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* On mobile sidebar is hidden, so full width */
+@media (max-width: 768px) {
+  .main {
+    width: 100% !important;
+    max-width: 100vw !important;
+    margin-left: 0 !important;
+  }
+}
+
+/* All cards, grids, and layout containers must stay within their parent */
+.card, .stats-grid, .grid-2, .grid-3, .grid-3-2,
+.staff-card-grid, .pt-card-grid, .pt-rec-grid, .create-staff-grid,
+.acct-section, .acct-tabs, .acct-nav,
+.section-divider, .about-main-card, .features-grid,
+.doctors-grid, .reviews-grid, .contact-wrapper, .faq-list {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tables scroll inside their wrapper — never push the page */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table { min-width: 0; width: 100%; }
+
+/* Ensure no inline-width element overflows */
+[style*="min-width:"] { max-width: 100%; }
+</style> -->
+
+<!-- <style>
+/* ── PATIENT-SPECIFIC OVERFLOW FIXES ── */
+
+/* Status row wraps on narrow screens */
+.portal-status-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  max-width: 100%;
+}
+@media (max-width: 900px) {
+  .portal-status-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .portal-status-row { grid-template-columns: 1fr; }
+}
+
+/* Hero banner wraps on mobile */
+.hero-banner { flex-wrap: wrap; max-width: 100%; box-sizing: border-box; }
+
+/* Vitals row */
+.vitals-row { max-width: 100%; }
+
+/* Info grid */
+.info-grid { max-width: 100%; }
+</style> -->
+
+
+</head>
+<body>
+
+<!-- Mobile sidebar overlay -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="shell">
+
+  <!-- ══════════════════════════════════════════════════════
+       SIDEBAR — Patient Portal
+       ══════════════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <i class="ti ti-activity-heartbeat" style="color:#fff;font-size:16px"></i>
+      </div>
+      <div>
+        <div class="sidebar-logo-text">ERMS</div>
+        <div class="sidebar-logo-sub">Patient Portal</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">My Visit</div>
+    <a class="sidebar-link active" onclick="showPatientPanel('overview')" href="#">
+      <i class="ti ti-layout-dashboard"></i> Overview
+    </a>
+    <a class="sidebar-link" onclick="showPatientPanel('vitals')" href="#">
+      <i class="ti ti-heart-rate-monitor"></i> Vital Signs
+    </a>
+    <a class="sidebar-link" onclick="showPatientPanel('diagnosis')" href="#">
+      <i class="ti ti-microscope"></i> Diagnosis & Rx
+    </a>
+
+    <div class="sidebar-section">Records</div>
+    <a class="sidebar-link" onclick="showPatientPanel('history')" href="#">
+      <i class="ti ti-history"></i> Visit Timeline
+    </a>
+    <a class="sidebar-link" onclick="showPatientPanel('personal')" href="#">
+      <i class="ti ti-user"></i> Personal Info
+    </a>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">PT</div>
+        <div>
+          <div class="sidebar-user-name" id="sidebarName">Patient</div>
+          <div class="sidebar-user-role">Patient</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">
+        <i class="ti ti-logout"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════════
+       MAIN CONTENT
+       ══════════════════════════════════════════════════════ -->
+  <div style="flex:1;min-width:0;overflow-x:hidden">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+        <i class="ti ti-menu-2"></i>
+      </button>
+      <div class="topbar-left">
+        <div class="topbar-title-wrap">
+          <div class="topbar-title" id="panelTitle">My Overview</div>
+          <div class="topbar-sub" id="panelSub">Your current visit summary</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn hide-mobile" title="Refresh" onclick="location.reload()">
+          <i class="ti ti-refresh"></i>
+        </button>
+        <div class="topbar-avatar" id="topbarAvatar">PT</div>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <!-- ── Welcome Hero Banner ── -->
+      <div class="hero-banner">
+        <div class="hero-avatar-wrap">
+          <div class="hero-avatar" id="heroAvatar">PT</div>
+        </div>
+        <div class="hero-text">
+          <div class="hero-greeting">Welcome to your patient portal</div>
+          <div class="hero-name" id="heroName">Patient Name</div>
+          <div class="hero-id"   id="heroId">National ID: —</div>
+          <div class="hero-chips" id="heroChips"></div>
+        </div>
+      </div>
+
+      <!-- ── Status summary row ── -->
+      <div class="portal-status-row">
+        <div class="status-card">
+          <div class="status-icon sky"><i class="ti ti-stethoscope"></i></div>
+          <div>
+            <div class="status-label">Visit Status</div>
+            <div id="sc-status" style="margin-top:4px">—</div>
+          </div>
+        </div>
+        <div class="status-card">
+          <div class="status-icon red"><i class="ti ti-heart-rate-monitor"></i></div>
+          <div>
+            <div class="status-label">Triage Priority</div>
+            <div id="sc-priority" style="margin-top:4px">—</div>
+          </div>
+        </div>
+        <div class="status-card">
+          <div class="status-icon green"><i class="ti ti-user-heart"></i></div>
+          <div>
+            <div class="status-label">Assigned Doctor</div>
+            <div class="status-value" id="sc-doctor" style="font-size:14px;margin-top:2px">—</div>
+          </div>
+        </div>
+        <div class="status-card">
+          <div class="status-icon amber"><i class="ti ti-bed"></i></div>
+          <div>
+            <div class="status-label">Bed / Location</div>
+            <div class="status-value" id="sc-bed" style="font-size:14px;margin-top:2px">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PANEL: Overview
+           ════════════════════════════════════════════ -->
+      <div class="panel active" id="panel-overview">
+        <div class="section-strip">
+          <div class="section-strip-icon"><i class="ti ti-layout-dashboard"></i></div>
+          <div>
+            <div class="section-strip-title">Visit Overview</div>
+            <div class="section-strip-sub">Your current ER visit at a glance</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" id="overviewContent">
+            <div style="text-align:center;padding:30px;color:#94A3B8">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PANEL: Vital Signs
+           ════════════════════════════════════════════ -->
+      <div class="panel" id="panel-vitals">
+        <div class="section-strip">
+          <div class="section-strip-icon"><i class="ti ti-heart-rate-monitor"></i></div>
+          <div>
+            <div class="section-strip-title">Vital Signs</div>
+            <div class="section-strip-sub">Recorded by your triage nurse</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" id="vitalsContent">
+            <div style="text-align:center;padding:30px;color:#94A3B8">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PANEL: Diagnosis & Prescriptions
+           ════════════════════════════════════════════ -->
+      <div class="panel" id="panel-diagnosis">
+        <div class="section-strip">
+          <div class="section-strip-icon"><i class="ti ti-microscope"></i></div>
+          <div>
+            <div class="section-strip-title">Diagnosis & Prescriptions</div>
+            <div class="section-strip-sub">Your diagnosis, treatment plan, and medications</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" id="diagnosisContent">
+            <div style="text-align:center;padding:30px;color:#94A3B8">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PANEL: Visit Timeline
+           ════════════════════════════════════════════ -->
+      <div class="panel" id="panel-history">
+        <div class="section-strip">
+          <div class="section-strip-icon"><i class="ti ti-history"></i></div>
+          <div>
+            <div class="section-strip-title">Visit Timeline</div>
+            <div class="section-strip-sub">Chronological events during your ER visit</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" id="historyContent">
+            <div style="text-align:center;padding:30px;color:#94A3B8">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           PANEL: Personal Info
+           ════════════════════════════════════════════ -->
+      <div class="panel" id="panel-personal">
+        <div class="section-strip">
+          <div class="section-strip-icon"><i class="ti ti-user"></i></div>
+          <div>
+            <div class="section-strip-title">Personal Information</div>
+            <div class="section-strip-sub">Your registered personal details</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" id="personalContent">
+            <div style="text-align:center;padding:30px;color:#94A3B8">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- auth.js first (provides loadDB, requireAuth, helpers) -->
+<script src="js/auth.js"></script>
+<!-- patient.js (patient-specific logic) -->
+<script src="js/patient.js"></script>
+<script>
+  // Kick off
+  initPatient();
+</script>
+</body>
+</html>
